@@ -1,0 +1,13 @@
+<div class="input-field">
+  <label for="region" class="active">{{  _('region', 'anguro.capse::lang.user') }}</label>
+  {{ form_select('region', regiones, null, {
+        class: 'form-control',
+        emptyOption: '-- Seleccione --',
+        'data-request': 'onInit',
+        'data-request-before-update': '$("#provSelect").val(null).change()',
+        'data-request-update': {
+            (__SELF__ ~ '::form/provincia'): '#provinciaSelect'
+        },
+        'data-request-success': '$("#provSelect").material_select()'
+  }) }}
+</div>

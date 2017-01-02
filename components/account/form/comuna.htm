@@ -1,0 +1,8 @@
+<div class="input-field form-group">
+    <label for="comuna" class="active">{{  _('comuna', 'anguro.capse::lang.user') }}</label>
+    {{ form_select('comuna', comunas, user.comuna, {
+        id: 'comuSelect',
+        class: 'form-control',
+        emptyOption: '-- Seleccione --',
+    }) }}
+</div>

@@ -1,0 +1,40 @@
+<!-- Formulario Login -->
+<div class="lt-row row">
+    <div class="lt-col col s12 center-align">
+      <i class="material-icons large">account_circle</i>
+    </div>
+</div>
+<div class="lt-row row">
+<form
+    data-request="cuentaUsuario::onSignin" class="lt-col col s12">
+    <div class="input-field">
+      <i class="material-icons prefix">email</i>
+      <label for="userSigninLogin">{{ loginAttributeLabel }}</label>
+      <input
+          name="login"
+          type="text"
+          class="form-control"
+          id="userSigninLogin"
+          placeholder="Ingrese su {{ loginAttributeLabel|lower }}" />
+    </div>
+    <div class="input-field">
+      <i class="material-icons prefix">lock_outline</i>
+      <label for="userSigninPassword">Contrase&ntilde;a</label>
+      <input
+          name="password"
+          type="password"
+          class="form-control"
+          id="userSigninPassword"
+          placeholder="Ingrese contrase&ntilde;a" />
+    </div>
+  <div class="lt-row row">
+    <div class="lt-col col s5">
+      <button type="submit" class="waves-effect waves-light btn btn-block">Iniciar Sesi&oacute;n</button>
+    </div>
+    <div class="lt-col col s2"></div>
+    <div class="lt-col col s5">
+      <button type="button" class="waves-effect waves-light btn btn-block blue registrarse"><i class="material-icons right">navigate_next</i> Registrarse</button>
+    </div>
+  </div>
+</form>
+</div>

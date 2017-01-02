@@ -1,0 +1,30 @@
+{% set countryId = countryId|default(form_value('country_id')) %}
+{% set stateId = stateId|default(form_value('state_id')) %}
+
+<div id="partialCountryState">
+        {% partial __SELF__ ~ '::country-state' countryId=user.country_id stateId=user.state_id %}
+      </div>
+
+<div class="input-field form-group">
+  <label for="accountCountry" class="active">Pa&iacute;s</label>
+    {{ form_select_country('country_id', countryId, {
+        id: 'accountCountry',
+        class: 'form-control',
+        emptyOption: '-- Seleccione --',
+        'data-request': 'onInit',
+        'data-request-update': {
+          'cuentaUsuario::country-state': '#partialCountryState'
+        }
+    })|raw }}
+</div>
+
+<div class="input-field form-group">
+  <label for="accountState" class="active">Regi&oacute;n</label>
+    {{ form_select_state('state_id', countryId, stateId, {
+        id: 'accountState',
+        class: 'form-control',
+        emptyOption: '-- Seleccione --'
+    })|raw }}
+</div>
+
+<script> $('select').material_select(); </script>

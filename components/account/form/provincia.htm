@@ -1,0 +1,13 @@
+<div class="input-field form-group">
+    <label for="provincia" class="active">{{  _('provincia', 'anguro.capse::lang.user') }}</label>
+    {{ form_select('provincia', provincias, user.provincia, {
+        id: 'provSelect',
+        class: 'form-control',
+        emptyOption: '-- Seleccione --',
+        'data-request': 'onInit',
+        'data-request-update': {
+            (__SELF__ ~ '::form/comuna'): '#comunaSelect'
+        },
+        'data-request-success': '$("#comuSelect").material_select()'
+    }) }}
+</div>

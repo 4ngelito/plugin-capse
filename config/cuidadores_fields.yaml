@@ -1,0 +1,104 @@
+# ===================================
+#  Extended Profile Field Definitions
+# ===================================
+
+rut:
+    label: anguro.capse::lang.user.rut
+    tab: 'Datos Personales'
+    span: left
+    
+fecha_nacimiento:
+    label: anguro.capse::lang.user.fecha_nacimiento
+    tab: 'Datos Personales'
+    type: datepicker
+    mode: date
+    span: right
+    
+sexo:
+    label: anguro.capse::lang.user.sexo
+    tab: 'Datos Personales'
+    type: dropdown
+    options:
+        masculino: 'Masculino'
+        femenino: 'Femenino'        
+        otro: 'Otro'
+    placeholder: '-- Seleccione --'
+    span: left
+
+telefonos:
+    label: anguro.capse::lang.user.telefonos
+    type: repeater
+    prompt: 'Agregar'
+    tab: 'Datos Contacto'
+    form:
+        fields:
+            tipo: 
+                label: 'tipo'
+                type: dropdown
+                options:
+                    movil: 'Móvil'
+                    trabajo: 'Trabajo'
+                    casa: 'Casa'
+                span: left
+            numero:
+                label: anguro.capse::lang.user.telefono
+                span: right
+                default: '+56'
+                placeholder: '+56976075380'
+                type: text
+
+region:
+    label: anguro.capse::lang.user.region
+    tab: 'Datos Contacto'
+    span: left
+    type: dropdown
+    emptyOption: '-- Seleccione --'
+    
+provincia:
+    label: anguro.capse::lang.user.provincia
+    tab: 'Datos Contacto'
+    span: right
+    type: dropdown
+    emptyOption: '-- Seleccione --'
+    dependsOn: region
+    defaultFrom: region
+
+comuna:
+    label: anguro.capse::lang.user.comuna
+    tab: 'Datos Contacto'
+    span: left
+    type: dropdown
+    dependsOn: provincia
+    emptyOption: '-- Seleccione --'
+    defaultFrom: provincia
+
+direccion:
+    label: anguro.capse::lang.user.direccion
+    tab: 'Datos Contacto'
+    span: right
+        
+pacientes:
+    label: 'Pacientes'
+    type: repeater
+    prompt: 'Agregar'
+    tab: 'Pacientes'
+    form:
+        fields:
+            parentesco: 
+                label: 'Parentesco'
+                type: dropdown
+                options:
+                    familiar: 'Familiar'
+                    amigo: 'Amigo/a'
+                    otro: 'Otro'
+                placeholder: '-- Ninguno --'
+                span: left
+            sexo:
+                label: anguro.capse::lang.user.sexo
+                type: dropdown
+                options:
+                    femenino: 'Femenino'
+                    masculino: 'Masculino'
+                    otro: 'Otro'
+                placeholder: '-- Seleccione --'
+                span: right

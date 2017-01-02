@@ -1,0 +1,5 @@
+1.0.1: First version of Capse
+1.0.2: 
+    - Actualiza tabla de usuarios con campos de cuidadores
+    - user_add_cuidadores_fields.php
+    

@@ -1,0 +1,8 @@
+{% if not user.is_activated %}
+
+    <h3>Tu direcci&oacute;n de Email no ha sido verificada!.</h3>
+    <p>Debes activar tu cuenta o ser&aacute; eliminada. Por favor verifique la bandeja de entrada de tu Email.
+        <a href="javascript:;" data-request="onSendActivationEmail">Reenviar c&oacute;digo de verificaci&oacute;n</a>.
+    </p>
+
+{% endif %}

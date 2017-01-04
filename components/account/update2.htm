@@ -1,0 +1,165 @@
+<style>
+.form-group.required .control-label:after {
+	content: "*";
+	color: #c20a0a;
+	padding: 0 3px;
+}
+</style>
+<div class="lt-row row">
+	<div class="lt-col col m3 s12">
+		<div class="avatarUsuario">
+			{% for image in user.avatar %} 
+			<img class="circle responsive-img"
+				src="{{ image.thumb(200, 200) }}" title="{{ image.title }}"
+				alt="{{ image.description }}">
+			{% else %}
+			<div class="circle responsive-img">
+			  <i class="material-icons large-icon">account_circle</i>
+			</div> 
+			{% endfor %}
+		</div>
+	</div>
+	<div class="lt-col col m6 s12">
+		<h3 contenteditable class="editable edit-tooltip" data-name="nameEditable">{{user.name}}</h3>
+		<h3 contenteditable class="editable edit-tooltip" data-name="surnameEditable">{{user.surname }}</h3>
+		<h5 contenteditable class="editable edit-tooltip" data-name="emailEditable">{{user.email }}</h5>
+	</div>
+	<div class="lt-col col m3 s12">
+		<button class="btn flat" data-request="cuentaUsuario::logout">Salir</button>
+	</div>
+</div>
+{{ form_ajax('onUpdate', { model: user }) }}
+<div class="lt-row row">
+	<div class="lt-col col s12">
+		<ul id="cuenta-tab" class="lt-tabs tabs">
+			<li class="tab lt-col col s4"><a class="active" href="#cuenta">Cuenta</a></li>
+			<li class="tab lt-col col s4"><a href="#datos">Datos de Contacto</a></li>
+			<li class="tab lt-col col s4"><a href="#pacientes">Pacientes</a></li>
+		</ul>
+	</div>
+	<div id="cuenta" class="lt-tab-content lt-col col s12">
+		<div class="input-field col m6 s12">
+			<i class="material-icons prefix">fingerprint</i> 
+			{{ form_label('rut', _('rut', 'anguro.capse::lang.user')) }} 
+			{{ form_text('rut', null, {class: 'form-control'}) }}
+		</div>
+		<div class="input-field col m6 s12">
+			<i class="material-icons prefix">cake</i> 
+			{{form_label('fecha_nacimiento', _('fecha_nacimiento','anguro.capse::lang.user')) }}
+			{{ form_text('fecha_nacimiento', [],{class: 'form-control datepicker', 'data-fecha':user.fecha_nacimiento}) }}
+		</div>
+		<div class="input-field col s12">
+			<label for="sexo" class="active">{{ _('sexo','anguro.capse::lang.user') }}</label>
+			<select name="sexo">
+				<option value="" disabled>-- Seleccione --</option>
+				<option value="masculino" {% if user.sexo=="masculino" %}selected{% endif %}>Masculino</option>
+				<option value="femenino" {% if user.sexo=="femenino" %}selected{% endif %}>Femenino</option>
+				<option value="otro" {% if user.sexo=="otro" %}selected{% endif %}>Otro</option>
+			</select>
+		</div>
+		<div class="divider" style="margin-top: 10px; margin-bottom: 10px"></div>
+		<h5>Cambiar Contrase&ntilde;a</h5>
+		<div class="input-field col m6 s12">
+			<i class="material-icons prefix">lock_outline</i> <label
+				for="password">Contrase&ntilde;a</label> <input type="password"
+				class="control-form validate" id="password" name="password">
+		</div>
+		<div class="input-field col m6 s12">
+			<i class="material-icons prefix">lock_outline</i> <label
+				for="password_confirmation">Repetir Contrase&ntilde;a</label> <input
+				type="password" class="control-form validate"
+				id="password_confirmation" name="password_confirmation">
+		</div>
+	</div>
+	<div id="datos" class="lt-tab-content lt-col col s12">
+		<div class="lt-col col m6 s12">
+			<h5>{{ _('direccion', 'anguro.capse::lang.user')}}</h5>
+			<div class="col s12">
+				<div class="input-field">
+					<label for="direccion">Calle y N&uacute;mero</label>
+					<input
+						type="text" class="form-control validate" id="direccion"
+						name="direccion" placeholder="Av. Siempre viva, 18">
+				</div>
+				<div id="regionSelect">
+				{% partial __SELF__ ~ '::form/region'%}
+				</div>
+				<div id="provinciaSelect">
+				{% partial __SELF__ ~'::form/provincia' %}
+				</div>
+				<div id="comunaSelect">
+				{% partial __SELF__ ~ '::form/comuna'%}
+				</div>
+			</div>
+		</div>
+		<div class="lt-col col m6 s12" id="telefonos">
+			<h5>{{ _('telefonos', 'anguro.capse::lang.user')}}</h5>
+			<div class="col s12">
+				{% for telefono in user.telefonos %}
+				<div class="telefono row valign-wrapper">
+					<div class="input-field col s3">
+						<label for="telefonos[tipo][]" class="active">Tipo</label> 
+						<select
+							name="telefonos[tipo][]" required>
+							<option value="" disabled>-- Seleccione --</option>
+							<option value="movil" {% if telefono.tipo=="movil" %}selected{% endif %}>Móvil</option>
+							<option value="trabajo" {% if telefono.tipo=="trabajo" %}selected{% endif %}>Trabajo</option>
+							<option value="casa" {% if telefono.tipo=="casa" %}selected{% endif %}>Casa</option>
+						</select>
+					</div>
+					<div class="input-field col s8">
+						<label for="telefonos[numero][]">Número</label> <input type="text"
+							class="form-control validate" name="telefonos[numero][]"
+							value="{{ telefono.numero }}" required>
+					</div>
+					<a class="btn-flat col s1 valign center red-text quitar"><i
+						class="material-icons">clear</i></a>
+				</div>
+				{% endfor %} 
+				<a class="btn-floating pull-right agregar" data-tipo="telefono"><i class="material-icons">add</i></a>
+			</div>
+		</div>
+	</div>
+	<div id="pacientes" class="lt-tab-content lt-col col s12">
+		<h5>{{ _('pacientes', 'anguro.capse::lang.user')}}</h5>
+		<div class="lt-col col s12" id="pacientes">
+			{% for paciente in user.pacientes %}
+			<div class="paciente row valign-wrapper">
+				<div class="input-field col s6">
+					<label for="pacientes[parentesco][]" class="active">Parentesco</label>
+					<select name="pacientes[parentesco][]">
+						<option value="">-- Ninguno --</option>
+						<option value="familiar" {% if paciente.parentesco=="familiar" %}selected{% endif %}>Familiar</option>
+						<option value="amigo" {% if paciente.parentesco=="amigo" %}selected{% endif %}>Amigo</option>
+						<option value="otro" {% if paciente.parentesco=="otro" %}selected{% endif %}>Otro</option>
+					</select>
+				</div>
+				<div class="input-field col s6">
+					<label for="pacientes[sexo][]" class="active">{{ _('sexo','anguro.capse::lang.user') }}</label> 
+					<select name="pacientes[sexo][]"
+						required>
+						<option value="" disabled>-- Seleccione --</option>
+						<option value="masculino" {% if paciente.sexo=="masculino" %}selected{% endif %}>Masculino</option>
+						<option value="femenino" {% if paciente.sexo=="femenino" %}selected{% endif %}>Femenino</option>
+						<option value="otro" {% if paciente.sexo=="otro" %}selected{% endif %}>Otro</option>
+					</select>
+				</div>
+				<a class="btn-flat col s1 valign center red-text quitar"><i
+					class="material-icons">clear</i></a>
+			</div>
+			{% endfor %} 
+			<a class="btn-floating pull-right agregar"
+				data-tipo="paciente"><i class="material-icons">add</i></a>
+		</div>
+	</div>
+</div>
+<div class="lt-row row">
+	<div class="lt-col col s12">
+		<div class="lt-super-large-padding center">
+			<button type="submit" class="btn btn-primary pull-right">{{
+				_('save', 'backend::lang.form') }}</button>
+		</div>
+	</div>
+</div>
+
+{{ form_close() }}

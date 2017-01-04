@@ -6,17 +6,22 @@ $(document).ready(function() {
         center: false,
         dots: false
     });
-    // Go to the next item
+    
     $('.registrarse').click(function() {
         owl.trigger('next.owl.carousel');
     });
-    // Go to the previous item
+    
     $('.iniciarSesion').click(function() {
-        // With optional speed parameter
-        // Parameters has to be in square bracket '[]'
         owl.trigger('prev.owl.carousel', [300]);
     });
     
+    $('.edit-tooltip').tooltip({
+    	delay: 50,
+    	position: 'right',
+    	tooltip: 'Click para Editar'
+    });
+    
+    $('.collapsible').collapsible();    
     
     var $datepicker = $('.datepicker');
     var fecha = $('#fecha_nacimiento').data('fecha');
@@ -47,7 +52,6 @@ $(document).ready(function() {
         container: '#lt-mainpage'
     });
     
-    //$datepicker.pickadate('set', 'select', new Date(2016, 10, 23));
     if(fecha !== null){
         var picker = $datepicker.pickadate('picker');
         picker.set('select', fecha, { format: 'yyyy-mm-dd' });

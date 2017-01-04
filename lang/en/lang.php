@@ -12,7 +12,8 @@
         'direccion' => 'Dirección',
         'region' => 'Región',
         'provincia' => 'Provincia',
-        'comuna' => 'Comuna'
+        'comuna' => 'Comuna',
+        'pacientes' => 'Pacientes'
     ],
     'formularios' => [
         'sign_in' => 'Iniciar Sesión',

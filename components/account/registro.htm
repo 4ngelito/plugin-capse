@@ -3,13 +3,13 @@
 {{ form_ajax('onRegister', {class: 'lt-col col s12'}) }}
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">account_circle</i>
-      <label for="nombres">Nombres</label>
-      <input type="text" class="form-control validate" id="nombres" name="nombres" required>
+      <label for="name">Nombres</label>
+      <input type="text" class="form-control validate" id="nombres" name="name" required>
     </div>
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">account_circle</i>
-      <label for="apellidos">Apellidos</label>
-      <input type="text" class="form-control validate" id="apellidos" name="apellidos" required>
+      <label for="surname">Apellidos</label>
+      <input type="text" class="form-control validate" id="apellidos" name="surname" required>
     </div>
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">fingerprint</i>
@@ -28,7 +28,7 @@
     </div>
     <div class="input-field col m6 s12">
       <label class="active">Sexo</label>
-      <select required>
+      <select name="sexo" required>
         <option value="" disabled selected>-- Seleccione --</option>
         <option value="masculino">Masculino</option>
         <option value="femenino">Femenino</option>

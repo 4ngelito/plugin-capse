@@ -1,0 +1,19 @@
+.avatarUsuario {
+    position: relative;
+    margin: 0 auto;
+    display: table;
+}
+
+.avatarUsuario > #uploadAvatar {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    height: 50px;
+    cursor: pointer;
+    background-color: rgba(0,0,0, 0.5);
+    color: #fff;
+}
+
+.avatarUsuario > #uploadAvatar #cambiarImagen:hover{
+    text-decoration: underline;
+}

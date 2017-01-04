@@ -34,19 +34,27 @@ class Account extends UserAccountComponent
     public function onRun()
     {   
         $u = Auth::getUser();
+        $region = isset($u->region) ? $u->region : null;
+        $provincia = isset($u->provincia) ? $u->provincia : null;
         $this->page['__PARENT__'] = '_account';
         $this->page['__PREFIX__'] = 'cuidador_';
         $this->page['regiones'] = $this->getRegiones();
-        $this->page['provincias'] = $this->getProvincias($u->region);
-        $this->page['comunas'] = $this->getComunas($u->provincia);
+        $this->page['provincias'] = $this->getProvincias($region);
+        $this->page['comunas'] = $this->getComunas($provincia);
         
         $this->addJs('/plugins/anguro/capse/assets/js/capse.js');
+        $this->addCss('/plugins/anguro/capse/assets/css/capse.css');
         
         return parent::onRun();
     }
     
     public function onRegister() {
-        $rules;
+        $rules['name'] = '';
+        $rules['surname'] = '';
+        $rules['rut'];
+        $rules['fecha_nacimiento'];
+        $rules['sexo'];
+        
         parent::onRegister();
     }
     

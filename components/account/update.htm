@@ -12,14 +12,18 @@
                 {% for image in user.avatar %} 
                 <img class="circle responsive-img" src="{{ image.thumb(200, 200) }}" title="{{ image.title }}" alt="{{ image.description }}">
                 {% else %}
-                <img class="circle responsive-img" src="{{ '/plugins/anguro/capse/assets/images/no-avatar.png' }}" title="no-avatar" alt="no-avatar">
+                <img class="circle responsive-img" src="{{ url('/')~'/plugins/anguro/capse/assets/images/no-avatar.png' }}" title="no-avatar" alt="no-avatar">
                 {% endfor %}
             </div>            
             <div id="uploadAvatar" class="valign ">
-                {{ form_ajax('avatarUpdate', {'files': true}) }}
-                <div id="cambiarImagen" class="center-block">
-                    <i class="material-icons pull-right">add_a_photo</i>
-                    Cambiar Imagen
+                {{ form_ajax('cuentaUsuario::onAvatarUpdate', {'id': 'avatarForm', 'files': true}) }}
+                <div id="cambiarImagen" class="file-field center-block">
+                    <span>
+                        <i class="material-icons pull-right">add_a_photo</i>
+                        Cambiar Imagen
+                    </span>
+                    <!-- <input type="file" name="avatarFile" id="avatarFile"> -->
+                    {{ form_file('avatar_file', {id: 'avatar_file'}) }}
                 </div>
                 {{ form_close() }}
             </div>

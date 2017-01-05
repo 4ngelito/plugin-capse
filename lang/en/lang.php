@@ -3,6 +3,9 @@
         'name' => 'capse',
         'description' => 'plugin para la pataforma de capse',
     ],
+    'cuenta' => [
+        'cuenta' => 'Cuenta Cuidador'
+    ],
     'user' => [
         'rut' => 'Rut',
         'fecha_nacimiento' => 'Fecha de Nacimiento',
@@ -27,5 +30,9 @@
         'imagen' => '¿Alguna imagen?',
         'permiso' => 'Ingrese permiso',
         'codigo' => 'Codigo de permiso'
+    ],
+    'messages' => [
+        'imagen_invalida' => 'El formato de imagen seleccionado no está permitido'
+
     ]
 ];

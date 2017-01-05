@@ -4,7 +4,8 @@ $(document).ready(function() {
         nav: false,
         items: 1,
         center: false,
-        dots: false
+        dots: false,
+        mouseDrag: false
     });
     
     $('.registrarse').click(function() {
@@ -23,8 +24,9 @@ $(document).ready(function() {
     
     $('.collapsible').collapsible();    
     
-    var $datepicker = $('.datepicker');
+    
     var fecha = $('#fecha_nacimiento').data('fecha');
+    var $datepicker = $('.datepicker');
     $datepicker.pickadate({
         
         monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
@@ -52,7 +54,7 @@ $(document).ready(function() {
         container: '#lt-mainpage'
     });
     
-    if(fecha !== null){
+    if(fecha !== undefined){
         var picker = $datepicker.pickadate('picker');
         picker.set('select', fecha, { format: 'yyyy-mm-dd' });
     }
@@ -108,6 +110,34 @@ $(document).ready(function() {
             $(this).before($pacienteInput);
         }
         $('select').material_select();
+    });
+
+    $('#avatar_file').change(function(){
+      var form = $('#avatarForm');
+      var d = new FormData(form[0]);
+      alert(form.data('request'));
+
+      $.ajax({
+          headers: 
+         {
+           'X-OCTOBER-REQUEST-HANDLER': form.data('request'), // important
+         },
+          //url: form.attr('action'),
+          data: d,
+          processData: false,
+          contentType: false,
+          type: 'POST',
+          cache: false,
+          success: function(data){
+            var img = '<img class="circle responsive-img" src="' + data.result + '" title="{{ image.title }}" alt="{{ image.description }}">';
+            $('#avatarImagen').html();
+            console.log(data);
+
+              /*$.request('onDummy', {
+                  update: {'component::view': '#id'},
+              });*/
+          }
+      });
     });
         
 });

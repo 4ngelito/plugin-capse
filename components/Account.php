@@ -3,6 +3,10 @@
 use Lang;
 use Auth;
 use File;
+use Input;
+use Request;
+use Validator;
+use ValidationException;
 use RainLab\User\Models\User as UserModel;
 use RainLab\User\Controllers\Users as UsersController;
 use RainLab\User\Components\Account as UserAccountComponent;
@@ -13,7 +17,7 @@ class Account extends UserAccountComponent
     public function componentDetails()
     {
         return [
-            'name'        => 'anguro.capse::lang.account.account',
+            'name'        => 'anguro.capse::lang.cuenta.cuenta',
             'description' => 'rainlab.user::lang.account.account_desc'
         ];
     }
@@ -44,22 +48,58 @@ class Account extends UserAccountComponent
         
         $this->addJs('/plugins/anguro/capse/assets/js/capse.js');
         $this->addCss('/plugins/anguro/capse/assets/css/capse.css');
+        $this->addCss('/plugins/anguro/capse/assets/css/videosyoutube.css');
         
         return parent::onRun();
     }
     
     public function onRegister() {
-        $rules['name'] = '';
-        $rules['surname'] = '';
-        $rules['rut'];
-        $rules['fecha_nacimiento'];
-        $rules['sexo'];
+        $rules['name'] = 'required|min:3';
+        $rules['surname'] = 'required|min:3';
+        $rules['rut'] = ['required',
+            'min:9',
+            'regex:\b\d{7,9}\-[K|0-9]'];
+        $rules['fecha_nacimiento'] = 'required|date';
+        $rules['sexo'] = 'required';
         
         parent::onRegister();
     }
     
     public function onCheckEmail(){
         return ['isTaken' => Auth::findUserByLogin(post('email')) ? 1 : 0];
+    }
+
+    public function onAvatarUpdate(){
+        if (!$user = $this->user()) {
+            return;
+        } 
+
+        try {
+
+            $reglas = ['avatar_file' => 'required|mimes:jpeg,jpg,png'];
+            
+            $archivo = Input::file('avatar_file');
+            $ext = $archivo->getMimeType();
+            $extension = ['image/jpeg','image/png'];
+
+            //comprueba que sea un formato de imagen
+            if(!in_array($ext, $extension))
+                throw new ValidationException(['avatar_file' => Lang::get('anguro.capse::lang.messages.imagen_invalida')]);
+
+            $file = new \System\Models\File;
+            $file->fromPost($archivo);
+
+            $user->avatar()->add($file);
+            $user->save();
+
+            $thumb
+
+            return ['result'=> $user->getAvatarThumb(250)];
+        }
+        catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
     }
     
     private function getRegiones(){

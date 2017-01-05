@@ -6,14 +6,18 @@
 
 .avatarUsuario > #uploadAvatar {
     position: absolute;
-    bottom: 5px;
+    bottom: 15px;
     right: 5px;
-    height: 50px;
-    cursor: pointer;
+    height: 30px;
+    cursor: pointer !important;
     background-color: rgba(0,0,0, 0.5);
     color: #fff;
+    padding: 5px;
+    border-radius: 5px 0 0;
 }
 
 .avatarUsuario > #uploadAvatar #cambiarImagen:hover{
     text-decoration: underline;
+    cursor: pointer !important;
+    
 }

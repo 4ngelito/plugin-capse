@@ -9,11 +9,7 @@
     <div class="lt-col col m3 s12">
         <div class="avatarUsuario valign-wrapper">
             <div id="avatarImagen">
-                {% for image in user.avatar %} 
-                <img class="circle responsive-img" src="{{ image.thumb(200, 200) }}" title="{{ image.title }}" alt="{{ image.description }}">
-                {% else %}
-                <img class="circle responsive-img" src="{{ url('/')~'/plugins/anguro/capse/assets/images/no-avatar.png' }}" title="no-avatar" alt="no-avatar">
-                {% endfor %}
+                <img class="circle responsive-img" src="{{ user.getAvatarThumb(250) }}" title="{{ user.name }}" alt="{{ 'Avatar de '~user.name }}">
             </div>            
             <div id="uploadAvatar" class="valign ">
                 {{ form_ajax('cuentaUsuario::onAvatarUpdate', {'id': 'avatarForm', 'files': true}) }}
@@ -22,7 +18,6 @@
                         <i class="material-icons pull-right">add_a_photo</i>
                         Cambiar Imagen
                     </span>
-                    <!-- <input type="file" name="avatarFile" id="avatarFile"> -->
                     {{ form_file('avatar_file', {id: 'avatar_file'}) }}
                 </div>
                 {{ form_close() }}
@@ -30,15 +25,18 @@
         </div>        
     </div>
     <div class="lt-col col m6 s12">
-        <h3 contenteditable class="editable edit-tooltip" data-name="nameEditable">{{user.name}}</h3>
-        <h3 contenteditable class="editable edit-tooltip" data-name="surnameEditable">{{user.surname }}</h3>
-        <h5 contenteditable class="editable edit-tooltip" data-name="emailEditable">{{user.email }}</h5>
+        <h3 contenteditable class="editable edit-tooltip" data-campo="name" style="text-transform: capitalize">{{user.name}}</h3>
+        <h3 contenteditable class="editable edit-tooltip" data-campo="surname" style="text-transform: capitalize">{{user.surname }}</h3>
+        <h5 contenteditable class="editable edit-tooltip" data-campo="email">{{user.email }}</h5>
     </div>
     <div class="lt-col col m3 s12">
         <button class="btn flat" data-request="cuentaUsuario::logout">Salir</button>
     </div>
 </div>
 {{ form_ajax('onUpdate', { model: user }) }}
+{{ form_hidden('name', null, {class: 'form-control'}) }}
+{{ form_hidden('surname', null, {class: 'form-control'}) }}
+{{ form_hidden('email', null, {class: 'form-control'}) }}
 <div class="lt-row row">
     <ul class="collapsible" data-collapsible="expandable">
         <li>

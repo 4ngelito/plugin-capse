@@ -32,7 +32,7 @@
         'codigo' => 'Codigo de permiso'
     ],
     'messages' => [
-        'imagen_invalida' => 'El formato de imagen seleccionado no está permitido'
+        'imagen_invalida' => 'Error: El formato de imagen seleccionado no está permitido!'
 
     ]
 ];

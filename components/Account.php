@@ -7,6 +7,7 @@ use Input;
 use Request;
 use Validator;
 use ValidationException;
+use Flash;
 use RainLab\User\Models\User as UserModel;
 use RainLab\User\Controllers\Users as UsersController;
 use RainLab\User\Components\Account as UserAccountComponent;
@@ -52,39 +53,116 @@ class Account extends UserAccountComponent
         
         return parent::onRun();
     }
-    
-    public function onRegister() {
-        $rules['name'] = 'required|min:3';
-        $rules['surname'] = 'required|min:3';
-        $rules['rut'] = ['required',
-            'min:9',
-            'regex:\b\d{7,9}\-[K|0-9]'];
-        $rules['fecha_nacimiento'] = 'required|date';
-        $rules['sexo'] = 'required';
-        
-        parent::onRegister();
+
+    /**
+     * Override Register the user
+     */
+    public function onRegister()
+    {
+        try {
+            if (!UserSettings::get('allow_registration', true)) {
+                throw new ApplicationException(Lang::get('rainlab.user::lang.account.registration_disabled'));
+            }
+
+            /*
+             * Validate input
+             */
+            $data = post();
+
+            if (!array_key_exists('password_confirmation', $data)) {
+                $data['password_confirmation'] = post('password');
+            }
+
+            $rules = [
+                'email'    => 'required|email|between:6,255',
+                'password' => 'required|between:4,255'
+            ];
+            $rules['name'] = 'required|min:3';
+            $rules['surname'] = 'required|min:3';
+            $rules['rut'] = ['required',
+                'min:9',
+                'regex:\b\d{7,9}\-[K|0-9]'];
+            $rules['fecha_nacimiento'] = 'required|date';
+            $rules['sexo'] = 'required';
+
+            if ($this->loginAttribute() == UserSettings::LOGIN_USERNAME) {
+                $rules['username'] = 'required|between:2,255';
+            }
+
+            $validation = Validator::make($data, $rules);
+            if ($validation->fails()) {
+                throw new ValidationException($validation);
+            }
+
+            /*
+             * Register user
+             */
+            $requireActivation = UserSettings::get('require_activation', true);
+            $automaticActivation = UserSettings::get('activate_mode') == UserSettings::ACTIVATE_AUTO;
+            $userActivation = UserSettings::get('activate_mode') == UserSettings::ACTIVATE_USER;
+            $user = Auth::register($data, $automaticActivation);
+
+            /*
+             * Activation is by the user, send the email
+             */
+            if ($userActivation) {
+                $this->sendActivationEmail($user);
+
+                Flash::success(Lang::get('rainlab.user::lang.account.activation_email_sent'));
+            }
+
+            /*
+             * Automatically activated or not required, log the user in
+             */
+            if ($automaticActivation || !$requireActivation) {
+                Auth::login($user);
+            }
+
+            /*
+             * Redirect to the intended page after successful sign in
+             */
+            $redirectUrl = $this->pageUrl($this->property('redirect'))
+                ?: $this->property('redirect');
+
+            if ($redirectUrl = post('redirect', $redirectUrl)) {
+                return Redirect::intended($redirectUrl);
+            }
+
+        }
+        catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
     }
     
     public function onCheckEmail(){
         return ['isTaken' => Auth::findUserByLogin(post('email')) ? 1 : 0];
     }
 
+    public function onDummy(){}
+
     public function onAvatarUpdate(){
         if (!$user = $this->user()) {
             return;
         } 
 
-        try {
+        $res['response'] = 'error';
+        $res['message'] = 'error indeterminado!';
 
-            $reglas = ['avatar_file' => 'required|mimes:jpeg,jpg,png'];
+        try {
             
             $archivo = Input::file('avatar_file');
             $ext = $archivo->getMimeType();
             $extension = ['image/jpeg','image/png'];
 
             //comprueba que sea un formato de imagen
-            if(!in_array($ext, $extension))
+            if(!in_array($ext, $extension)){
                 throw new ValidationException(['avatar_file' => Lang::get('anguro.capse::lang.messages.imagen_invalida')]);
+            }
+
+            if($avatar = $this->user()->avatar){
+                $avatar->delete();
+            }
 
             $file = new \System\Models\File;
             $file->fromPost($archivo);
@@ -92,14 +170,18 @@ class Account extends UserAccountComponent
             $user->avatar()->add($file);
             $user->save();
 
-            $thumb
-
-            return ['result'=> $user->getAvatarThumb(250)];
+            $res['response'] = 'success';
+            $res['imagen'] = [
+                'avatar' => $user->getAvatarThumb(250),
+                'titulo' => $user->name,
+                'descripcion' => 'avatar de ' . $user->name
+                ];
+            Flash::success('Imagen Actualizada correctamente!');
         }
         catch (Exception $ex) {
-            if (Request::ajax()) throw $ex;
-            else Flash::error($ex->getMessage());
+            Flash::error($ex->getMessage());
         }
+        return ['result'=> $res];   
     }
     
     private function getRegiones(){

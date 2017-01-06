@@ -21,3 +21,14 @@
     cursor: pointer !important;
     
 }
+
+#toast-container {
+  top: auto !important;
+  right: 5% !important;
+  bottom: 10%; 
+}
+
+p.flash-message {
+    top: auto !important;
+    bottom: 5% !important;
+}

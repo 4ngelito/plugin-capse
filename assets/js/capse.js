@@ -18,7 +18,7 @@ $(document).ready(function() {
     
     $('.edit-tooltip').tooltip({
     	delay: 50,
-    	position: 'right',
+    	position: 'bottom',
     	tooltip: 'Click para Editar'
     });
     
@@ -50,6 +50,10 @@ $(document).ready(function() {
         labelMonthPrev: 'Mes Ant.',
         labelMonthSelect: 'Seleccione Mes',
         labelYearSelect: 'Seleccione Año',
+
+        format: 'd mmmm yyyy',
+        formatSubmit: 'yyyy-m-d',
+        hiddenSuffix: '',
 
         container: '#lt-mainpage'
     });
@@ -115,7 +119,6 @@ $(document).ready(function() {
     $('#avatar_file').change(function(){
       var form = $('#avatarForm');
       var d = new FormData(form[0]);
-      alert(form.data('request'));
 
       $.ajax({
           headers: 
@@ -129,15 +132,26 @@ $(document).ready(function() {
           type: 'POST',
           cache: false,
           success: function(data){
-            var img = '<img class="circle responsive-img" src="' + data.result + '" title="{{ image.title }}" alt="{{ image.description }}">';
-            $('#avatarImagen').html();
-            console.log(data);
+            var res = data.result;
+            if(res.response === 'success'){
+              var imagen = res.imagen;
+              var img = '<img class="circle responsive-img" src="' + imagen.avatar + '" title="' + imagen.titulo + '" alt="' + imagen.descripcion +'">';
+              $('#avatarImagen').html(img);
+            }
 
-              /*$.request('onDummy', {
-                  update: {'component::view': '#id'},
-              });*/
+            $.request('onDummy',{
+              update : {'cuentaUsuario::flash_message': '#flash_message'}
+              })
+            ;
           }
       });
+    });
+
+    $('.editable').focusout(function(){
+      var campo = $(this).data('campo');
+      var valor = $(this).html();
+      var $input = $('input[name=' + campo + ']');
+      $input.val(valor);
     });
         
 });

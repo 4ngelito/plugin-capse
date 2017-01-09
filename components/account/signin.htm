@@ -15,7 +15,7 @@
           type="text"
           class="form-control"
           id="userSigninLogin"
-          placeholder="Ingrese su {{ loginAttributeLabel|lower }}" />
+          placeholder="Ingrese su {{ loginAttributeLabel|lower }}" required/>
     </div>
     <div class="input-field">
       <i class="material-icons prefix">lock_outline</i>
@@ -25,15 +25,14 @@
           type="password"
           class="form-control"
           id="userSigninPassword"
-          placeholder="Ingrese contrase&ntilde;a" />
+          placeholder="Ingrese contrase&ntilde;a" required/>
     </div>
   <div class="lt-row row">
-    <div class="lt-col col s5">
-      <button type="submit" class="waves-effect waves-light btn btn-block">Iniciar Sesi&oacute;n</button>
+    <div class="lt-col col s12 btn-group">      
+      <button type="submit" class="waves-effect waves-light btn btn-block pull-right"><i class="material-icons right">send</i>Iniciar Sesi&oacute;n</button>
     </div>
-    <div class="lt-col col s2"></div>
-    <div class="lt-col col s5">
-      <button type="button" class="waves-effect waves-light btn btn-block blue registrarse"><i class="material-icons right">navigate_next</i> Registrarse</button>
+    <div class="lt-col col s12">
+      <span class="pull-right" style="display: inline-block; padding: 1rem 0;">No tienes una cuenta aún? <a href="javascript:;" class="registrarse"><i class="material-icons right">navigate_next</i> Registrarse</a></span>
     </div>
   </div>
 </form>

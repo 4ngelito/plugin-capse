@@ -1,31 +1,27 @@
 {% if not user %}
-<div id="login-modal" class="modal">
-  <div class="modal-content">
-    <div class="lt-owl-carousel owl-carousel owl-theme formularios">
-      <div class="item">
-        <div class="lt-owl-carousel-item item">
-          <h3>{{ _('sign_in', 'anguro.capse::lang.formularios') }}</h3>
-          <div class="divider"></div>
-          {% partial __SELF__ ~ '::signin' %}
-        </div>
-      </div>
-      <div class="item">
-        <div class="lt-owl-carousel-item item">
-          <h3>{{ _('register', 'anguro.capse::lang.formularios') }}</h3>
-          <div class="divider"></div>
-          {% partial __SELF__ ~ '::registro' %}
-        </div>
-      </div>
+<div class="lt-owl-carousel owl-carousel owl-theme formularios">
+  <div class="item">
+    <div class="lt-owl-carousel-item item">
+      <h3>{{ _('sign_in', 'anguro.capse::lang.formularios') }}</h3>
+      <div class="divider"></div>
+      {% partial __SELF__ ~ '::signin' %}
+    </div>
+  </div>
+  <div class="item">
+    <div class="lt-owl-carousel-item item">
+      <h3>{{ _('register', 'anguro.capse::lang.formularios') }}</h3>
+      <div class="divider"></div>
+      {% partial __SELF__ ~ '::registro' %}
     </div>
   </div>
 </div>
 {% else %}
 
-    {% partial __SELF__ ~ '::activation_check' %}
+    {% partial __PARENT__ ~ '::activation_check' %}
 
     {% partial __SELF__ ~ '::update' %}
 
-    {% partial __SELF__ ~ '::deactivate_link' %}
+    {% partial __PARENT__ ~ '::deactivate_link' %}
 
 {% endif %}
 <div id="flash_message">

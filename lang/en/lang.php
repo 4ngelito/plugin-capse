@@ -32,7 +32,10 @@
         'codigo' => 'Codigo de permiso'
     ],
     'messages' => [
-        'imagen_invalida' => 'Error: El formato de imagen seleccionado no está permitido!'
+        'imagen_invalida' => 'Error: El formato de imagen seleccionado no está permitido!',
+        'deactivate_account' => 'Desactivar la cuenta',
+        'email_usado' => 'El email indicado ya está en uso',
+        'password_missmatch' => 'Las contraseñas no coinciden!'
 
     ]
 ];

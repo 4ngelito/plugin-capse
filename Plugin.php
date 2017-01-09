@@ -4,9 +4,9 @@
 use Yaml;
 use File;
 use Lang;
-use Storage;
 use System\Classes\PluginBase;
 use RainLab\User\Models\User as UserModel;
+use RainLab\User\Models\UserGroup as UserGroup;
 use RainLab\User\Controllers\Users as UsersController;
 
 /**
@@ -77,6 +77,22 @@ class Plugin extends PluginBase
             
             $model->addDynamicMethod('getComunaOptions', function() use ($model) {
                 return $this->getComunas($model->provincia);
+            });
+            
+            $model->addDynamicMethod('addUserGroup', function($group) use ($model) {
+                if ($group instanceof Collection) {
+                   return $model->groups()->saveMany($group);
+                }
+
+                if (is_string($group)) {
+                   $group = UserGroup::whereCode($group)->first();
+
+                   return $model->groups()->save($group);
+                }
+
+                if ($group instanceof UserGroup) {
+                   return $model->groups()->save($group);
+                }
             });
         
         });

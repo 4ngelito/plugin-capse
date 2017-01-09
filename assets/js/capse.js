@@ -55,7 +55,11 @@ $(document).ready(function() {
         formatSubmit: 'yyyy-m-d',
         hiddenSuffix: '',
 
-        container: '#lt-mainpage'
+        container: '.formDate',
+        
+        onOpen :function() { 
+            $(this).appendTo('body');
+        }
     });
     
     if(fecha !== undefined){
@@ -121,8 +125,7 @@ $(document).ready(function() {
       var d = new FormData(form[0]);
 
       $.ajax({
-          headers: 
-         {
+          headers: {
            'X-OCTOBER-REQUEST-HANDLER': form.data('request'), // important
          },
           //url: form.attr('action'),
@@ -152,6 +155,23 @@ $(document).ready(function() {
       var valor = $(this).html();
       var $input = $('input[name=' + campo + ']');
       $input.val(valor);
+      if(campo === 'email'){
+        $.request('onCheckEmail',{
+            data : {'email': valor},
+            update : {'cuentaUsuario::flash_message': '#flash_message'}
+            })
+          ;
+      }
     });
+    
+    $(window).on('ajaxErrorMessage', function(event, message){
+        $.oc.flashMsg({
+            'text': message,
+            'class': 'error',
+            'interval': 3
+        });        
+        // This will stop the default alert() message
+        event.preventDefault();
+    })
         
 });

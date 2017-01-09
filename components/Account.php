@@ -5,11 +5,11 @@ use Auth;
 use File;
 use Input;
 use Request;
+use Redirect;
 use Validator;
 use ValidationException;
 use Flash;
-use RainLab\User\Models\User as UserModel;
-use RainLab\User\Controllers\Users as UsersController;
+use RainLab\User\Models\Settings as UserSettings;
 use RainLab\User\Components\Account as UserAccountComponent;
 use Exception;
 
@@ -77,11 +77,11 @@ class Account extends UserAccountComponent
                 'email'    => 'required|email|between:6,255',
                 'password' => 'required|between:4,255'
             ];
-            $rules['name'] = 'required|min:3';
-            $rules['surname'] = 'required|min:3';
+            $rules['name'] = 'required|between:3,255';
+            $rules['surname'] = 'required|between:3,255';
             $rules['rut'] = ['required',
                 'min:9',
-                'regex:\b\d{7,9}\-[K|0-9]'];
+                'regex:/\b\d{7,9}\-[K|0-9]/'];
             $rules['fecha_nacimiento'] = 'required|date';
             $rules['sexo'] = 'required';
 
@@ -93,6 +93,10 @@ class Account extends UserAccountComponent
             if ($validation->fails()) {
                 throw new ValidationException($validation);
             }
+            
+            if($data['password'] !== $data['password_confirmation']){
+                throw new ValidationException(Lang::get('anguro.capse::lang.messages.password_missmatch'));
+            }
 
             /*
              * Register user
@@ -101,6 +105,8 @@ class Account extends UserAccountComponent
             $automaticActivation = UserSettings::get('activate_mode') == UserSettings::ACTIVATE_AUTO;
             $userActivation = UserSettings::get('activate_mode') == UserSettings::ACTIVATE_USER;
             $user = Auth::register($data, $automaticActivation);
+            
+            $user->addUserGroup('cuidadores');
 
             /*
              * Activation is by the user, send the email
@@ -135,12 +141,107 @@ class Account extends UserAccountComponent
         }
     }
     
+    /**
+     * Override Update the user
+     */
+    public function onUpdate()
+    {
+        if (!$user = $this->user()) {
+            return;
+        }
+        
+        $rules = ['email'    => 'required|email|between:6,255'];
+        $rules['name'] = 'required|between:3,255';
+        $rules['surname'] = 'required|between:3,255';
+        $rules['rut'] = ['required',
+            'min:9',
+            'regex:/\b\d{7,9}\-[K|0-9]/'];
+        $rules['fecha_nacimiento'] = 'required|date';
+        $rules['sexo'] = 'required';
+        $rules['direccion'] = 'string|between:3,255';
+        
+        if(strlen(post('password'))){
+            $rules['password'] = 'confirmed|between:4,255';
+        }
+        
+        $t = null;
+        $telefonos = post('telefonos');
+        $n = count($telefonos['tipo']);
+        for($i = 0; $i < $n; $i++){
+            $t[$i]['tipo'] = $telefonos['tipo'][$i];
+            $t[$i]['numero'] = $telefonos['numero'][$i];
+            
+            //valida numero de telefono
+            $v = Validator::make($t[$i],['numero' => 'digits_between:8,9']);
+            if ($v->fails()) {
+                throw new ValidationException($v);
+            }
+        }
+        
+        $p = null;
+        $pacientes = post('pacientes');
+        $n = count($pacientes['parentesco']);
+        for($i = 0; $i < $n; $i++){
+            $p[$i]['parentesco'] = $pacientes['parentesco'][$i];
+            $p[$i]['sexo'] = $pacientes['sexo'][$i];
+            //valida existencia del sexo del paciente
+            $v = Validator::make($p[$i],['sexo' => 'required']);
+            if ($v->fails()) {
+                throw new ValidationException($v);
+            }
+        }
+        
+        $validation = Validator::make(post(), $rules);
+        if ($validation->fails()) {
+            throw new ValidationException($validation);
+        }
+
+        $user->fill(post());
+        $user->telefonos = $t;
+        $user->pacientes = $p;
+        $user->save();
+
+        /*
+         * Password has changed, reauthenticate the user
+         */
+        if (strlen(post('password'))) {
+            Auth::login($user->reload(), true);
+        }
+
+        Flash::success(post('flash', Lang::get('rainlab.user::lang.account.success_saved')));
+
+        /*
+         * Redirect
+         */
+        if ($redirect = $this->makeRedirection()) {
+            return $redirect;
+        }
+    }
+    
+    /**
+     * Verifica si existe el correo 
+     * @return array : respuesta Json
+     */
     public function onCheckEmail(){
-        return ['isTaken' => Auth::findUserByLogin(post('email')) ? 1 : 0];
+        $r['response'] = 'success';
+        $email = post('email');
+        
+        $emailUsuario = $this->user() ? $this->user()->email : null;
+        
+        if($email !== $emailUsuario && Auth::findUserByLogin($email)){
+            Flash::error(Lang::get('anguro.capse::lang.messages.email_usado'));
+            $r['response'] = 'error';
+        }
+        return $r;
     }
 
     public function onDummy(){}
-
+    
+    /**
+     * Actualiza el avatar del usuario
+     * @return array : Respuesta json
+     * @throws ValidationException
+     */
     public function onAvatarUpdate(){
         if (!$user = $this->user()) {
             return;
@@ -172,8 +273,8 @@ class Account extends UserAccountComponent
 
             $res['response'] = 'success';
             $res['imagen'] = [
-                'avatar' => $user->getAvatarThumb(250),
-                'titulo' => $user->name,
+                'avatar' => $user->getAvatarThumb(250,['mode' => 'crop']),
+                'titulo' => $user->name .' '. $user->surname,
                 'descripcion' => 'avatar de ' . $user->name
                 ];
             Flash::success('Imagen Actualizada correctamente!');
@@ -184,6 +285,10 @@ class Account extends UserAccountComponent
         return ['result'=> $res];   
     }
     
+    /**
+     * Obtiene las regiones de Chile
+     * @return array : Arreglo con todas las regiones contenidas en el archivo
+     */
     private function getRegiones(){
         $jsonFile = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
         
@@ -197,6 +302,11 @@ class Account extends UserAccountComponent
         return $regiones;
     }
     
+    /**
+     * Obtiene las provincias de una region
+     * @param string $region : Region a consultar las provincias
+     * @return array : Arreglo con todas las provincias de la region contenidas en el archivo
+     */
     private function getProvincias($region = NULL){
         if($region == NULL)
             return [ '' => '-- Seleccione Regi&oacute;n --'];
@@ -216,6 +326,11 @@ class Account extends UserAccountComponent
         return $provincias;
     }
     
+    /**
+     * Obtinee las comunas de una provincia
+     * @param string $provincia
+     * @return array : Arreglco con las comunas de la provincia contenidas en el archivo
+     */
     private function getComunas($provincia = NULL){
         if($provincia == NULL)
             return [ '' => '-- Seleccione Provincia --'];

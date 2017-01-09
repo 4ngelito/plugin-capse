@@ -1,15 +1,15 @@
 <!-- Formulario Registro -->
 <div class="lt-row row">
-{{ form_ajax('onRegister', {class: 'lt-col col s12'}) }}
+{{ form_ajax('onRegister', {class: 'lt-col col s12 formDate'}) }}
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">account_circle</i>
       <label for="name">Nombres</label>
-      <input type="text" class="form-control validate" id="nombres" name="name" required>
+      <input type="text" class="form-control validate" id="nombres" name="name" placeholder="Nombres" required>
     </div>
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">account_circle</i>
       <label for="surname">Apellidos</label>
-      <input type="text" class="form-control validate" id="apellidos" name="surname" required>
+      <input type="text" class="form-control validate" id="apellidos" name="surname" placeholder="Apellidos" required>
     </div>
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">fingerprint</i>
@@ -19,12 +19,12 @@
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">cake</i>
       <label for="fecha_nacimiento" class="form-control active validate">Fecha de Nacimiento</label>
-      <input type="date" class="datepicker fecha_nacimiento" id="fecha_nacimiento" name="fecha_nacimiento" required>      
+      <input type="date" class="datepicker fecha_nacimiento" name="fecha_nacimiento" required>      
     </div>
     <div class="input-field col m6 s12">
       <i class="material-icons prefix">email</i>
       <label for="email">Email</label>
-      <input type="email" class="form-control validate" id="email" name="email" required>      
+      <input type="email" class="form-control validate" id="email" name="email" required data-request="onCheckEmail" data-track-input="2">      
     </div>
     <div class="input-field col m6 s12">
       <label class="active">Sexo</label>
@@ -46,9 +46,9 @@
       <input type="password" class="validate" id="password_confirmation" name="password_confirmation" required>
     </div>
   <div class="lt-row row">
-    <div class="lt-col col s12 btn-group">
-      <button type="button" class="waves-effect waves-light btn btn-block red iniciarSesion"><i class="material-icons left">backspace</i>Volver</button>
+    <div class="lt-col col s12 btn-group">      
       <button type="submit" class="waves-effect waves-light btn btn-block pull-right"><i class="material-icons right">send</i>Registrarse</button>
+      <button type="button" class="waves-effect waves-light btn btn-block red iniciarSesion"><i class="material-icons left">backspace</i>Volver</button>
     </div>
   </div>
 {{ form_close() }}

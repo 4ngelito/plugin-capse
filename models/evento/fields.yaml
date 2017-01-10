@@ -1,0 +1,49 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+fields:
+
+    titulo:
+        label: anguro.capse::lang.evento.titulo
+        span: left
+        placeholder: anguro.capse::lang.evento.titulo_placeholder
+
+    slug:
+        label: anguro.capse::lang.evento.slug
+        span: right
+        placeholder: anguro.capse::lang.evento.slug_placeholder
+        preset:
+            field: titulo
+            type: slug
+
+    toolbar:
+        type: partial
+        path: evento_toolbar
+        cssClass: collapse-visible
+
+secondaryTabs:
+    stretch: true
+    fields:
+        descripcion:
+            tab: anguro.capse::lang.evento.tab_edit
+            type: richeditor
+            cssClass: field-slim evento-preview
+            stretch: true
+            mode: split
+
+        cuando:
+            tab: anguro.capse::lang.evento.tab_manage
+            label: anguro.capse::lang.evento.cuando
+            span: left
+            cssClass: checkbox-align
+            type: datepicker
+            mode: datetime
+
+
+        featured_images:
+            tab: anguro.capse::lang.evento.tab_manage
+            label: anguro.capse::lang.evento.featured_images
+            type: fileupload
+            mode: image
+            imageWidth: 200
+            imageHeight: 200

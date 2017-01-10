@@ -1,0 +1,34 @@
+<?php if (!$this->fatalError): ?>
+
+    <div class="layout fancy-layout">
+        <?= Form::open([
+            'class' => 'layout',
+            'data-change-monitor' => 'true',
+            'data-window-close-confirm' => e(trans('anguro.capse::lang.evento.close_confirm')),
+            'id' => 'evento-form'
+        ]) ?>
+            <?= $this->formRender() ?>
+
+        <?= Form::close() ?>
+    </div>
+    <div class="layout-row">
+        <button
+            type="button"
+            data-request="onGetDirecciones"
+            class="btn btn-default"
+            data-attach-loading>
+            Mostrar Mapa
+        </button>
+    </div>
+    <div class="direcciones">
+    </div>
+
+<?php else: ?>
+    <div class="control-breadcrumb">
+        <?= Block::placeholder('breadcrumb') ?>
+    </div>
+    <div class="padded-container">
+        <p class="flash-message static error"><?= e(trans($this->fatalError)) ?></p>
+        <p><a href="<?= Backend::url('anguro/capse/evento') ?>" class="btn btn-default"><?= e(trans('anguro.capse::lang.evento.return_to_eventos')) ?></a></p>
+    </div>
+<?php endif ?>

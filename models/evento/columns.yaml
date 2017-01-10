@@ -1,0 +1,28 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    titulo:
+        label: anguro.capse::lang.evento.titulo
+        searchable: true
+
+    # author:
+    #   label: Author
+    #   relation: user
+    #   select: login
+    #   searchable: true
+
+    created_at:
+        label: anguro.capse::lang.evento.created
+        type: date
+        invisible: true
+
+    updated_at:
+        label: anguro.capse::lang.evento.updated
+        type: date
+        invisible: true
+
+    cuando:
+        label: anguro.capse::lang.evento.cuando
+        type: date

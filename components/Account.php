@@ -12,6 +12,7 @@ use Flash;
 use RainLab\User\Models\Settings as UserSettings;
 use RainLab\User\Components\Account as UserAccountComponent;
 use Exception;
+use GuzzleHttp\Client as GuzzleClient;
 
 class Account extends UserAccountComponent
 {
@@ -150,7 +151,7 @@ class Account extends UserAccountComponent
             return;
         }
         
-        $rules = ['email'    => 'required|email|between:6,255'];
+        $rules = ['email' => 'required|email|between:6,255'];
         $rules['name'] = 'required|between:3,255';
         $rules['surname'] = 'required|between:3,255';
         $rules['rut'] = ['required',
@@ -192,13 +193,38 @@ class Account extends UserAccountComponent
         }
         
         $validation = Validator::make(post(), $rules);
+        $validation->sometimes(['region', 'provincia', 'comuna'], 'required', function($input){
+            return strlen($input->direccion) > 1;
+        });
         if ($validation->fails()) {
             throw new ValidationException($validation);
         }
 
+        $dirAnterior = $user->direccion;
+        $geocode = null;
+
         $user->fill(post());
         $user->telefonos = $t;
         $user->pacientes = $p;
+
+        if(strlen(post('direccion')) && $dirAnterior !== post('direccion')){
+            $dir = urlencode($user->getDireccionCompleta());
+        }
+        if(isset($dir)){
+            $geoResponse = $this->getDireccionGeocode($dir);
+            if($geoResponse->status === 'OK'){
+                $res = $geoResponse->results[0];
+                $geocode = [
+                    'location' => [
+                        'lat' => $res->geometry->location->lat,
+                        'lng' => $res->geometry->location->lng
+                    ],
+                    'place_id' => $res->place_id
+                ];
+            }
+        }
+
+        $user->geocode = $geocode;
         $user->save();
 
         /*
@@ -208,7 +234,7 @@ class Account extends UserAccountComponent
             Auth::login($user->reload(), true);
         }
 
-        Flash::success(post('flash', Lang::get('rainlab.user::lang.account.success_saved')));
+        Flash::success(post('flash', Lang::get('anguro.capse::lang.cuenta.success_saved')));
 
         /*
          * Redirect
@@ -234,6 +260,7 @@ class Account extends UserAccountComponent
         }
         return $r;
     }
+
 
     public function onDummy(){}
     
@@ -348,6 +375,18 @@ class Account extends UserAccountComponent
         }
         
         return $comunas;
+    }
+
+
+    public function getDireccionGeocode(string $direccion){
+        $r = null;
+        $apiKey = env('GOOGLE_API_KEY');
+        $client = new GuzzleClient();
+        $res = $client->get("https://maps.googleapis.com/maps/api/geocode/json?address={$direccion}&key={$apiKey}");
+        if($res->getStatusCode() == 200){
+            $r = $res->getBody();
+        }
+        return json_decode($r);
     }
 }
 

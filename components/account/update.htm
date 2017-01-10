@@ -30,7 +30,7 @@
         <h5 contenteditable class="editable edit-tooltip" data-campo="email">{{ user.email }}</h5>
     </div>
     <div class="lt-col col m3 s12">
-        <button class="btn flat" data-request="onLogout" data-request-data="redirect: '/'">Salir</button>
+        <button class="btn flat" data-request="onLogout" data-request-data="redirect: '/'" data-attach-loading>Salir</button>
     </div>
 </div>
 {{ form_ajax('onUpdate', { model: user, class: 'formDate' }) }}
@@ -64,6 +64,7 @@
                 </div>
                 <div class="divider" style="margin-top: 10px; margin-bottom: 10px"></div>
                 <h5 class="col s12">Cambiar Contrase&ntilde;a</h5>
+                <p>Ingrese una nueva contraseña si desea cambiarla.</p>
                 <div class="input-field col m6 s12">
                     <i class="material-icons prefix">lock_outline</i> 
                     <label for="password">Contrase&ntilde;a</label>
@@ -164,7 +165,7 @@
 <div class="lt-row row">
     <div class="lt-col col s12">
         <div class="lt-super-large-padding center">
-            <button type="submit" class="btn btn-primary pull-right">
+            <button type="submit" class="btn btn-primary pull-right" data-attach-loading>
                 {{ _('save', 'backend::lang.form') }}</button>
         </div>
     </div>

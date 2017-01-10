@@ -1,0 +1,16 @@
+# ===================================
+# Filter Scope Definitions
+# ===================================
+
+scopes:
+
+    published_date:
+
+        # Filter name
+        label: anguro.capse::lang.eventos.filter_date
+
+        # Filter type
+        type: daterange
+
+        # SQL Conditions
+        conditions: cuando >= ':after' AND cuando <= ':before'

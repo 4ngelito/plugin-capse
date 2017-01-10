@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Evento
+
+# Model Form Field configuration
+form: $/anguro/capse/models/evento/fields.yaml
+
+# Model Class name
+modelClass: Anguro\Capse\Models\Evento
+
+# Default redirect location
+defaultRedirect: anguro/capse/eventos
+
+# Create page
+create:
+    title: Create Evento
+    redirect: anguro/capse/eventos/update/:id
+    redirectClose: anguro/capse/eventos
+
+# Update page
+update:
+    title: Edit Evento
+    redirect: anguro/capse/eventos
+    redirectClose: anguro/capse/eventos
+
+# Preview page
+preview:
+    title: Preview Evento

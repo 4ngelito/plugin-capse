@@ -22,8 +22,8 @@ class UserAddCuidadoresFields extends Migration
             $table->integer('provincia')->nullable();
             $table->integer('comuna')->nullable();
             $table->text('direccion')->nullable();
-            $table->json('pacientes')->nullable();
-            
+            $table->json('pacientes')->nullable();            
+            $table->json('geocode')->nullable();
         });
     }
 
@@ -31,17 +31,18 @@ class UserAddCuidadoresFields extends Migration
     {
         Schema::table('users', function($table)
         {
-        $table->dropColumn([
-            'rut',
-            'fecha_nacimiento',
-            'sexo',
-            'telefonos',
-            'direccion',
-            'comuna',
-            'provincia',
-            'region',
-            'pacientes'
-        ]);
+            $table->dropColumn([
+                'rut',
+                'fecha_nacimiento',
+                'sexo',
+                'telefonos',
+                'direccion',
+                'comuna',
+                'provincia',
+                'region',
+                'pacientes',
+                'geocode'
+            ]);
         });
     }
 

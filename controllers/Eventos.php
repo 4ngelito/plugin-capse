@@ -41,7 +41,16 @@ class Eventos extends Controller
 
         $this->bodyClass = 'compact-container';
         $this->addCss('/plugins/anguro/capse/assets/css/rainlab.blog-preview.css');
-        $this->addJs('/plugins/anguro/capse/assets/js/post-form.js');
+        $this->addJs('/plugins/anguro/capse/assets/js/evento-form.js');
+        $this->addCss('/plugins/anguro/capse/assets/css/google-maps.css');
+
+        $this->vars['geocodes'] = $this->getUsuariosGeocodes();
+
+        $gMapsApiKey = env('GOOGLE_API_KEY');
+        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=initMap";
+
+        $this->addJs('/plugins/anguro/capse/assets/js/google-maps.js');
+        $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']);        
 
         return $this->asExtension('FormController')->create();
     }
@@ -50,7 +59,16 @@ class Eventos extends Controller
     {
         $this->bodyClass = 'compact-container';
         $this->addCss('/plugins/anguro/capse/assets/css/rainlab.blog-preview.css');
-        $this->addJs('/plugins/anguro/capse/assets/js/post-form.js');
+        $this->addJs('/plugins/anguro/capse/assets/js/evento-form.js');
+        $this->addCss('/plugins/anguro/capse/assets/css/google-maps.css');
+
+        $this->vars['geocodes'] = $this->getUsuariosGeocodes();
+
+        $gMapsApiKey = env('GOOGLE_API_KEY');
+        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=initMap";
+
+        $this->addJs('/plugins/anguro/capse/assets/js/google-maps.js');
+        $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']); 
 
         return $this->asExtension('FormController')->update($recordId);
     }
@@ -101,67 +119,21 @@ class Eventos extends Controller
         ];
     }
 
-    public function onGetDirecciones(){
-        $pathRegiones = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
-        $pathProvincias = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_ProvinciaRegion.min.json';
-        $pathComunas = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_ComunaProvincia.min.json';
-
-        $jsonRegiones = json_decode(File::get($pathRegiones), false, 512, JSON_UNESCAPED_UNICODE);
-        $jsonProvincias = json_decode(File::get($pathProvincias), false, 512, JSON_UNESCAPED_UNICODE);
-        $jsonComunas = json_decode(File::get($pathComunas), false, 512, JSON_UNESCAPED_UNICODE);
-        
-        $regiones = [];
-        $provincias = [];
-        $comunas = [];
-
-        foreach ($jsonRegiones as $region) {
-            $regiones[$region->region_id] = $region->name;
-        }
-
-        foreach ($jsonProvincias as $region_id => $p) {
-            //if($region_id == $region){
-                foreach ($p as $prov) {
-                    $provincias[$region_id][$prov->provincia_id] = $prov->name;
-                }
-            //}
-        }
-
-        foreach ($jsonComunas as $provincia_id => $c) {
-            //if($provincia_id == $provincia){
-                foreach ($c as $comu) {
-                    $comunas[$provincia_id][$comu->comuna_id] = $comu->name;
-                }
-            //}
-        }
+    public function getUsuariosGeocodes(){
 
         $usuarios = UserModel::all();
         $i = 0;
-        $direcciones = [];
+        $geocodes = [];
 
         foreach($usuarios as $u){
-            $direcciones[$i]['direccion'] = $u->direccion;
-            $direcciones[$i]['region'] = $regiones[$u->region];
-            $direcciones[$i]['provincia'] = $provincias[$u->region][$u->provincia];
-            $direcciones[$i]['comuna'] = $comunas[$u->provincia][$u->comuna];
+            if($u->geocode){
+                $geocodes[$i]['geocode'] = $u->geocode;
+                $geocodes[$i]['titulo'] = $u->direccion;
+            }
+            $i++;
         }
         
-        $this->vars['direcciones'] = $direcciones;
+        return $geocodes;
 
-        return [
-            '.direcciones' => $this->makePartial('mapa-direcciones')
-        ];
-
-    }
-
-    private function getRegiones(){
-        $jsonFile = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
-        $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
-        
-        $regiones = null;
-        foreach ($json as $region) {
-            $regiones[$region->region_id] = $region->name;
-        }
-        
-        return $regiones;
     }
 }

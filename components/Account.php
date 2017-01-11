@@ -81,8 +81,8 @@ class Account extends UserAccountComponent
             $rules['name'] = 'required|between:3,255';
             $rules['surname'] = 'required|between:3,255';
             $rules['rut'] = ['required',
-                'min:9',
-                'regex:/\b\d{7,9}\-[K|0-9]/'];
+                'regex:/^\b\d{7,9}\-[K|0-9]{1}$/'
+                ];
             $rules['fecha_nacimiento'] = 'required|date';
             $rules['sexo'] = 'required';
 
@@ -154,9 +154,10 @@ class Account extends UserAccountComponent
         $rules = ['email' => 'required|email|between:6,255'];
         $rules['name'] = 'required|between:3,255';
         $rules['surname'] = 'required|between:3,255';
-        $rules['rut'] = ['required',
-            'min:9',
-            'regex:/\b\d{7,9}\-[K|0-9]/'];
+        $rules['rut'] = [
+            'required',
+            'regex:/^\b\d{7,9}\-[K|0-9]{1}$/'
+        ];
         $rules['fecha_nacimiento'] = 'required|date';
         $rules['sexo'] = 'required';
         $rules['direccion'] = 'string|between:3,255';
@@ -165,7 +166,7 @@ class Account extends UserAccountComponent
             $rules['password'] = 'confirmed|between:4,255';
         }
         
-        $t = null;
+        $t = [];
         $telefonos = post('telefonos');
         $n = count($telefonos['tipo']);
         for($i = 0; $i < $n; $i++){
@@ -179,7 +180,7 @@ class Account extends UserAccountComponent
             }
         }
         
-        $p = null;
+        $p = [];
         $pacientes = post('pacientes');
         $n = count($pacientes['parentesco']);
         for($i = 0; $i < $n; $i++){
@@ -200,10 +201,13 @@ class Account extends UserAccountComponent
             throw new ValidationException($validation);
         }
 
+        $this->validaRut(post('rut'));
+
         $dirAnterior = $user->direccion;
-        $geocode = null;
+        $geocode = $user->geocode;
 
         $user->fill(post());
+
         $user->telefonos = $t;
         $user->pacientes = $p;
 
@@ -261,7 +265,6 @@ class Account extends UserAccountComponent
         return $r;
     }
 
-
     public function onDummy(){}
     
     /**
@@ -309,7 +312,43 @@ class Account extends UserAccountComponent
         catch (Exception $ex) {
             Flash::error($ex->getMessage());
         }
-        return ['result'=> $res];   
+        return ['result' => $res];   
+    }
+
+    private function validaRut(string $rut){
+        try {
+            if(strpos($rut, '-') !== false){
+                $multiplicador = [2,3,4,5,6,7];
+                $n = 5;
+                $rutArray = explode('-', $rut);
+                $dv = (string) $rutArray[1];
+                $r = array_map('intval', str_split($rutArray[0]));
+
+                $sum = 0;
+                $k = 0;
+                for ($i = count($r) - 1 ; $i >= 0; $i--){
+                    $sum = ($r[$i] * $multiplicador[$k]) + $sum;
+                    if($k >= $n){
+                        $k = 0;
+                    }
+                    else $k++;
+                }
+
+                $resto = $sum % 11;
+                $dvCalculado = (11 - $resto) > 9 ? 'K' : (string) (11 - $resto);
+                
+                if($dvCalculado !== $dv){
+                    throw new ValidationException(['rut' => 'Rut inválido, revise el Dígito verificador']);
+                }
+
+                return true;
+            }
+            else throw new ValidationException(['rut' => 'Rut inválido']);
+        }        
+        catch (Exception $ex) {
+            if (Request::ajax()) throw $ex;
+            else Flash::error($ex->getMessage());
+        }
     }
     
     /**

@@ -11,6 +11,41 @@
 
         <?= Form::close() ?>
     </div>
+    <div class="layout-row">
+        <button type="button" class="btn btn-default toggleMap pull-right">Ocultar Mapa</button>
+    
+        <div id="mapaWrapper">
+            <div id="map"></div>        
+        </div>
+    </div>
+    <script>
+    $(document).ready(function() {
+      //function initMap() {
+        var myLatLng = {lat: -33.451190, lng: -70.654388};
+
+        // Create a map object and specify the DOM element for display.
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: myLatLng,
+          scrollwheel: false,
+          zoom: 10
+        });
+
+        <?php 
+        $n = 0;
+        foreach($geocodes as $g){
+            echo "var marker{$n} = new google.maps.Marker({ 
+              map: map, 
+              position: { lat: {$g['geocode']['location']['lat']},  lng: {$g['geocode']['location']['lng']} }, 
+              title: '{$g['titulo']}' 
+            }); 
+      ";
+            $n++;
+        }
+        ?>
+      }
+      );
+
+    </script>
 
 <?php else: ?>
 

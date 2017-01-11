@@ -14,7 +14,7 @@
         'slug' => 'Slug',
         'slug_placeholder' => 'slug-evento',
         'tab_edit' => 'Descripción',
-        'tab_manage' => 'Otros Campos',
+        'tab_manage' => 'Más Información',
 
         'published' => 'Publicado?',
         'cuando' => 'cuando es?',

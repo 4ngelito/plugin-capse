@@ -7,10 +7,12 @@ use Lang;
 use Backend;
 use Event;
 use Auth;
+use Log;
 use System\Classes\PluginBase;
 use RainLab\User\Models\User as UserModel;
 use RainLab\User\Models\UserGroup as UserGroup;
 use RainLab\User\Controllers\Users as UsersController;
+use GuzzleHttp\Client as GuzzleClient;
 
 
 /**
@@ -103,6 +105,10 @@ class Plugin extends PluginBase
             $model->addDynamicMethod('getDireccionCompleta', function() use ($model) {
                 return $this->getDireccionCompleta();
             });
+
+            $model->addDynamicMethod('setGeocode', function() use ($model) {
+                return $this->setUserGeocode($model);
+            });
         
         });
 
@@ -118,6 +124,17 @@ class Plugin extends PluginBase
             $configFile = __DIR__ . '/config/cuidadores_fields.yaml';
             $config = Yaml::parse(File::get($configFile));
             $widget->addTabFields($config);
+        });
+
+        Event::listen('eloquent.updating: RainLab\User\Models\User', function($model) {
+            
+            if($model->getOriginal('direccion') !== $model->direccion){
+
+                $model->setGeocode();
+                trace_log($model->geocode);
+            }
+
+            return true;
         });
 
         /*
@@ -308,6 +325,10 @@ class Plugin extends PluginBase
 
         $u = Auth::getUser();
 
+        if(!isset($u)){
+            return null;
+        }
+
         $direccion = [
             'direccion' => $u->direccion,
             'region' => $regiones[$u->region],
@@ -320,6 +341,43 @@ class Plugin extends PluginBase
         unset($comunas);
         
         return $direccion['direccion'] .', '. $direccion['comuna'] .', '. $direccion['provincia'] .', '. $direccion['region'];
+    }
+
+    private function setUserGeocode($model){
+        $direccion = urlencode($model->getDireccionCompleta());
+
+        $apiKey = env('GOOGLE_API_KEY');
+
+        Log::info('[GOOGLE MAPS API] Generando consulta');
+
+        $client = new GuzzleClient();
+        $apiResponse = $client->get("https://maps.googleapis.com/maps/api/geocode/json?address={$direccion}&key={$apiKey}");
+        if($apiResponse->getStatusCode() == 200){
+            $response = json_decode($apiResponse->getBody());
+        }
+
+        Log::info('[GOOGLE MAPS API] Respuesta ' . $apiResponse->getStatusCode());
+
+        $geocode = $model->geocode;
+
+        if($response->status === 'OK'){
+            $res = $response->results[0];
+            trace_log('nuevo geocode');
+            trace_log($geocode);
+            $geocode = [
+                'location' => [
+                    'lat' => $res->geometry->location->lat,
+                    'lng' => $res->geometry->location->lng
+                ],
+                'place_id' => $res->place_id
+            ];
+            trace_log($geocode);
+        }
+
+        $model->geocode = $geocode;
+
+
+        return true;        
     }
     
 

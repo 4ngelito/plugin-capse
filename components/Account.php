@@ -80,9 +80,10 @@ class Account extends UserAccountComponent
             ];
             $rules['name'] = 'required|between:3,255';
             $rules['surname'] = 'required|between:3,255';
-            $rules['rut'] = ['required',
+            $rules['rut'] = [
+                'required',
                 'regex:/^\b\d{7,9}\-[K|0-9]{1}$/'
-                ];
+            ];
             $rules['fecha_nacimiento'] = 'required|date';
             $rules['sexo'] = 'required';
 
@@ -94,9 +95,11 @@ class Account extends UserAccountComponent
             if ($validation->fails()) {
                 throw new ValidationException($validation);
             }
+
+            $this->validaRut(post('rut'));
             
             if($data['password'] !== $data['password_confirmation']){
-                throw new ValidationException(Lang::get('anguro.capse::lang.messages.password_missmatch'));
+                throw new ValidationException(['password_confirmation' => Lang::get('anguro.capse::lang.messages.password_missmatch')]);
             }
 
             /*

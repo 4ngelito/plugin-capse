@@ -55,6 +55,7 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        
         UserModel::extend(function($model) {
             
             $campos = [
@@ -128,10 +129,8 @@ class Plugin extends PluginBase
 
         Event::listen('eloquent.updating: RainLab\User\Models\User', function($model) {
             
-            if($model->getOriginal('direccion') !== $model->direccion){
-
+            if($model->getOriginal('direccion') !== $model->direccion && strlen($model->direccion) > 3){
                 $model->setGeocode();
-                trace_log($model->geocode);
             }
 
             return true;
@@ -237,6 +236,9 @@ class Plugin extends PluginBase
             'functions' => [
                 '_' => function($messageId, $domain = 'anguro.capse::lang.messages') {
                     return Lang::get("$domain.$messageId");
+                },
+                'getUserAvatar' => function ($size){
+                    return Auth::getUser()->getAvatarThumb($size, ['mode' => 'crop']);
                 }
             ]
         ];
@@ -325,9 +327,9 @@ class Plugin extends PluginBase
 
         $u = Auth::getUser();
 
-        if(!isset($u)){
-            return null;
-        }
+        if(!isset($u) || strlen($u->direccion) <= 0){
+            return ;
+        }    
 
         $direccion = [
             'direccion' => $u->direccion,
@@ -362,8 +364,6 @@ class Plugin extends PluginBase
 
         if($response->status === 'OK'){
             $res = $response->results[0];
-            trace_log('nuevo geocode');
-            trace_log($geocode);
             $geocode = [
                 'location' => [
                     'lat' => $res->geometry->location->lat,
@@ -371,7 +371,6 @@ class Plugin extends PluginBase
                 ],
                 'place_id' => $res->place_id
             ];
-            trace_log($geocode);
         }
 
         $model->geocode = $geocode;

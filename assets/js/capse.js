@@ -163,15 +163,5 @@ $(document).ready(function() {
           ;
       }
     });
-    
-    $(window).on('ajaxErrorMessage', function(event, message){
-        $.oc.flashMsg({
-            'text': message,
-            'class': 'error',
-            'interval': 3
-        });        
-        // This will stop the default alert() message
-        event.preventDefault();
-    })
         
 });

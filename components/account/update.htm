@@ -9,7 +9,7 @@
     <div class="lt-col col m3 s12">
         <div class="avatarUsuario valign-wrapper">
             <div id="avatarImagen">
-                <img class="circle responsive-img" src="{{ user.getAvatarThumb(250, {'mode': 'crop'}) }}" title="{{ user.name ~' '~ user.surname }}" alt="{{ 'Avatar de '~user.name }}">
+                <img class="circle responsive-img" src="{{ getUserAvatar(250) }}" title="{{ user.name ~' '~ user.surname }}" alt="{{ 'Avatar de '~user.name }}">
             </div>            
             <div id="uploadAvatar" class="valign ">
                 {{ form_ajax('cuentaUsuario::onAvatarUpdate', {'id': 'avatarForm', 'files': true}) }}

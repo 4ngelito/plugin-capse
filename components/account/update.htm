@@ -29,9 +29,6 @@
         <h3 contenteditable class="editable edit-tooltip" data-campo="surname" style="text-transform: capitalize">{{user.surname }}</h3>
         <h5 contenteditable class="editable edit-tooltip" data-campo="email">{{ user.email }}</h5>
     </div>
-    <div class="lt-col col m3 s12">
-        <button class="btn flat" data-request="onLogout" data-request-data="redirect: '/'" data-attach-loading>Salir</button>
-    </div>
 </div>
 {{ form_ajax('onUpdate', { model: user, class: 'formDate' }) }}
 {{ form_hidden('name', null, {class: 'form-control'}) }}
@@ -132,6 +129,7 @@
             <div class="collapsible-body lt-row row">
                 <div class="lt-col col s12">
                     <div class="lt-col col s12" id="pacientes">
+                        <p>Pacientes que cuida actualmente.</p>
                         {% for paciente in user.pacientes %}
                         <div class="paciente row valign-wrapper">
                             <div class="input-field col s6">

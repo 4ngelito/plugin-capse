@@ -2,6 +2,7 @@
 
 use BackendMenu;
 use File;
+use Response;
 use Rainlab\User\Models\User as UserModel;
 use Backend\Classes\Controller;
 use Anguro\Capse\Models\Evento;
@@ -44,10 +45,8 @@ class Eventos extends Controller
         $this->addJs('/plugins/anguro/capse/assets/js/evento-form.js');
         $this->addCss('/plugins/anguro/capse/assets/css/google-maps.css');
 
-        $this->vars['geocodes'] = $this->getUsuariosGeocodes();
-
         $gMapsApiKey = env('GOOGLE_API_KEY');
-        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=initMap";
+        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=launchMap";
 
         $this->addJs('/plugins/anguro/capse/assets/js/google-maps.js');
         $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']);        
@@ -62,10 +61,8 @@ class Eventos extends Controller
         $this->addJs('/plugins/anguro/capse/assets/js/evento-form.js');
         $this->addCss('/plugins/anguro/capse/assets/css/google-maps.css');
 
-        $this->vars['geocodes'] = $this->getUsuariosGeocodes();
-
         $gMapsApiKey = env('GOOGLE_API_KEY');
-        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=initMap";
+        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=launchMap";
 
         $this->addJs('/plugins/anguro/capse/assets/js/google-maps.js');
         $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']); 
@@ -133,7 +130,6 @@ class Eventos extends Controller
             $i++;
         }
         
-        return $geocodes;
-
+        return Response::json($geocodes);
     }
 }

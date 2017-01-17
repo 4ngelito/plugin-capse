@@ -104,7 +104,7 @@ class Plugin extends PluginBase
             });
 
             $model->addDynamicMethod('getDireccionCompleta', function() use ($model) {
-                return $this->getDireccionCompleta();
+                return $this->getDireccionCompleta($model);
             });
 
             $model->addDynamicMethod('setGeocode', function() use ($model) {
@@ -292,7 +292,7 @@ class Plugin extends PluginBase
         return $comunas;
     }
 
-    private function getDireccionCompleta(){
+    private function getDireccionCompleta($model){
         $pathRegiones = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
         $pathProvincias = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_ProvinciaRegion.min.json';
         $pathComunas = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_ComunaProvincia.min.json';
@@ -325,17 +325,15 @@ class Plugin extends PluginBase
             //}
         }
 
-        $u = Auth::getUser();
-
-        if(!isset($u) || strlen($u->direccion) <= 0){
+        if(!isset($model) || strlen($model->direccion) <= 0){
             return ;
         }    
 
         $direccion = [
-            'direccion' => $u->direccion,
-            'region' => $regiones[$u->region],
-            'provincia' => $provincias[$u->region][$u->provincia],
-            'comuna' => $comunas[$u->provincia][$u->comuna]
+            'direccion' => $model->direccion,
+            'region' => $regiones[$model->region],
+            'provincia' => $provincias[$model->region][$model->provincia],
+            'comuna' => $comunas[$model->provincia][$model->comuna]
         ];
 
         unset($regiones);

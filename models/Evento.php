@@ -9,6 +9,7 @@ use Markdown;
 use RainLab\Blog\Classes\TagProcessor;
 use Cms\Classes\Page as CmsPage;
 use Cms\Classes\Theme;
+use Anguro\Capse\Classes\DireccionManager as Direccion;
 
 /**
  * Evento Model
@@ -42,7 +43,8 @@ class Evento extends Model
         'titulo' => 'required',
         'slug' => ['required', 'regex:/^[a-z0-9\/\:_\-\*\[\]\+\?\|]*$/i', 'unique:anguro_capse_eventos'],
         'descripcion' => 'required',
-        'cuando' => 'required|date'
+        'cuando' => 'required|date',
+        'direccion' => 'required'
     ];
 
     /**
@@ -59,6 +61,8 @@ class Evento extends Model
      * @var array
      */
     protected $dates = ['creado'];
+
+    protected $jsonable = ['geocode'];
 
     /**
      * The attributes on which the post list can be ordered
@@ -97,7 +101,9 @@ class Evento extends Model
 
     public function beforeSave()
     {
+        $dir = new Direccion();
         $this->descripcion_html = self::formatHtml($this->descripcion);
+        $this->geocode = $dir->getGeocode($this->direccion);
     }
 
     /**

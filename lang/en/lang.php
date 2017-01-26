@@ -30,7 +30,9 @@
         'close_confirm' => 'Hay cambios sin guardar\\nEstá seguro que desea salir?',
         'return_to_eventos' => 'Volver al listado de Eventos',
         'published_validation' => 'Publicacion validada',
-        'delete_confirm' => ' Está seguro que desea eliminar el Evento?'
+        'delete_confirm' => ' Está seguro que desea eliminar el Evento?',
+        'direccion' => 'Donde?',
+        'direccion_comment' => 'Seleccione un punto en el mapa para definir la dirección'
     ],
     'eventos' => [
         'filter_date' => 'entre fechas',

@@ -46,7 +46,7 @@ class Eventos extends Controller
         $this->addCss('/plugins/anguro/capse/assets/css/google-maps.css');
 
         $gMapsApiKey = env('GOOGLE_API_KEY');
-        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=launchMap";
+        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&libraries=places";
 
         $this->addJs('/plugins/anguro/capse/assets/js/google-maps.js');
         $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']);        
@@ -126,10 +126,14 @@ class Eventos extends Controller
             if($u->geocode){
                 $geocodes[$i]['geocode'] = $u->geocode;
                 $geocodes[$i]['titulo'] = $u->direccion;
+                $i++;
             }
-            $i++;
         }
+        $response = [
+            'n' => $i,
+            'geocodes' => $geocodes
+        ];
         
-        return Response::json($geocodes);
+        return Response::json($response);
     }
 }

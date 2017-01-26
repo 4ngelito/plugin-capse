@@ -13,6 +13,7 @@ use RainLab\User\Models\Settings as UserSettings;
 use RainLab\User\Components\Account as UserAccountComponent;
 use Exception;
 use GuzzleHttp\Client as GuzzleClient;
+use Anguro\Capse\Classes\DireccionManager as Direccion;
 
 class Account extends UserAccountComponent
 {
@@ -29,8 +30,8 @@ class Account extends UserAccountComponent
      */
     public function init()
     {
-        $this->page['provincias'] = $this->getProvincias(post('region'));
-        $this->page['comunas'] = $this->getComunas(post('provincia'));
+        $this->page['provincias'] = Direccion::getProvincias(post('region'));
+        $this->page['comunas'] = Direccion::getComunas(post('provincia'));
         $this->addComponent('RainLab\User\Components\Account', '_account', []);
     }
 
@@ -44,9 +45,9 @@ class Account extends UserAccountComponent
         $provincia = isset($u->provincia) ? $u->provincia : null;
         $this->page['__PARENT__'] = '_account';
         $this->page['__PREFIX__'] = 'cuidador_';
-        $this->page['regiones'] = $this->getRegiones();
-        $this->page['provincias'] = $this->getProvincias($region);
-        $this->page['comunas'] = $this->getComunas($provincia);
+        $this->page['regiones'] = Direccion::getRegiones();
+        $this->page['provincias'] = Direccion::getProvincias($region);
+        $this->page['comunas'] = Direccion::getComunas($provincia);
         
         $this->addJs('/plugins/anguro/capse/assets/js/capse.js');
         $this->addCss('/plugins/anguro/capse/assets/css/capse.css');
@@ -218,17 +219,8 @@ class Account extends UserAccountComponent
             $dir = urlencode($user->getDireccionCompleta());
         }
         if(isset($dir)){
-            $geoResponse = $this->getDireccionGeocode($dir);
-            if($geoResponse->status === 'OK'){
-                $res = $geoResponse->results[0];
-                $geocode = [
-                    'location' => [
-                        'lat' => $res->geometry->location->lat,
-                        'lng' => $res->geometry->location->lng
-                    ],
-                    'place_id' => $res->place_id
-                ];
-            }
+            $d = new Direccion();
+            $geocode = $d->getGeocode($dir);
         }
 
         $user->geocode = $geocode;
@@ -352,83 +344,6 @@ class Account extends UserAccountComponent
             if (Request::ajax()) throw $ex;
             else Flash::error($ex->getMessage());
         }
-    }
-    
-    /**
-     * Obtiene las regiones de Chile
-     * @return array : Arreglo con todas las regiones contenidas en el archivo
-     */
-    private function getRegiones(){
-        $jsonFile = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
-        
-        $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
-        
-        $regiones = null;
-        foreach ($json as $region) {
-            $regiones[$region->region_id] = $region->name;
-        }
-        
-        return $regiones;
-    }
-    
-    /**
-     * Obtiene las provincias de una region
-     * @param string $region : Region a consultar las provincias
-     * @return array : Arreglo con todas las provincias de la region contenidas en el archivo
-     */
-    private function getProvincias($region = NULL){
-        if($region == NULL)
-            return [ '' => '-- Seleccione Regi&oacute;n --'];
-        
-        $jsonFile = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_ProvinciaRegion.min.json';
-        $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
-        $provincias = null;
-        
-        foreach ($json as $region_id => $p) {
-            if($region_id == $region){
-                foreach ($p as $prov) {
-                    $provincias[$prov->provincia_id] = $prov->name;
-                }
-            }
-        }
-        
-        return $provincias;
-    }
-    
-    /**
-     * Obtinee las comunas de una provincia
-     * @param string $provincia
-     * @return array : Arreglco con las comunas de la provincia contenidas en el archivo
-     */
-    private function getComunas($provincia = NULL){
-        if($provincia == NULL)
-            return [ '' => '-- Seleccione Provincia --'];
-        
-        $jsonFile = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_ComunaProvincia.min.json';
-        $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
-        $comunas = null;
-        
-        foreach ($json as $provincia_id => $c) {
-            if($provincia_id == $provincia){
-                foreach ($c as $com) {
-                    $comunas[$com->comuna_id] = $com->name;
-                }
-            }
-        }
-        
-        return $comunas;
-    }
-
-
-    public function getDireccionGeocode(string $direccion){
-        $r = null;
-        $apiKey = env('GOOGLE_API_KEY');
-        $client = new GuzzleClient();
-        $res = $client->get("https://maps.googleapis.com/maps/api/geocode/json?address={$direccion}&key={$apiKey}");
-        if($res->getStatusCode() == 200){
-            $r = $res->getBody();
-        }
-        return json_decode($r);
     }
 }
 

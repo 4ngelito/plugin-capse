@@ -7,12 +7,11 @@ use Lang;
 use Backend;
 use Event;
 use Auth;
-use Log;
 use System\Classes\PluginBase;
 use RainLab\User\Models\User as UserModel;
 use RainLab\User\Models\UserGroup as UserGroup;
 use RainLab\User\Controllers\Users as UsersController;
-use GuzzleHttp\Client as GuzzleClient;
+use Anguro\Capse\Classes\DireccionManager as Direccion;
 
 
 /**
@@ -76,15 +75,15 @@ class Plugin extends PluginBase
             $model->fillable(array_merge($model->getFillable(), $campos));
             
             $model->addDynamicMethod('getRegionOptions', function() {
-                return $this->getRegiones();
+                return Direccion::getRegiones();
             });
 
             $model->addDynamicMethod('getProvinciaOptions', function() use ($model) {
-                return $this->getProvincias($model->region);
+                return Direccion::getProvincias($model->region);
             });
             
             $model->addDynamicMethod('getComunaOptions', function() use ($model) {
-                return $this->getComunas($model->provincia);
+                return Direccion::getComunas($model->provincia);
             });
             
             $model->addDynamicMethod('addUserGroup', function($group) use ($model) {
@@ -242,64 +241,14 @@ class Plugin extends PluginBase
                 }
             ]
         ];
-    }
+    } 
     
-    private function getRegiones(){
-        $jsonFile = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
-        $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
-        
-        $regiones = null;
-        foreach ($json as $region) {
-            $regiones[$region->region_id] = $region->name;
-        }
-        
-        return $regiones;
-    }
-    
-    private function getProvincias($region){
-        if($region == NULL)
-            return [ '' => '-- Seleccione Regi&oacute;n --'];
-        $jsonFile = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_ProvinciaRegion.min.json';
-        $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
-        $provincias = null;
-        
-        foreach ($json as $region_id => $p) {
-            if($region_id == $region){
-                foreach ($p as $prov) {
-                    $provincias[$prov->provincia_id] = $prov->name;
-                }
-            }
-        }
-        
-        return $provincias;
-    }
-    
-    private function getComunas($provincia){
-        if($provincia == NULL)
-            return [ '' => '-- Seleccione Provincia --'];
-        $jsonFile = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_ComunaProvincia.min.json';
-        $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
-        $comunas = null;
-        
-        foreach ($json as $provincia_id => $c) {
-            if($provincia_id == $provincia){
-                foreach ($c as $comu) {
-                    $comunas[$comu->comuna_id] = $comu->name;
-                }
-            }
-        }
-        
-        return $comunas;
-    }
 
     private function getDireccionCompleta($model){
-        $pathRegiones = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
-        $pathProvincias = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_ProvinciaRegion.min.json';
-        $pathComunas = __DIR__ . '/assets/js/bdcut-cl/BDCUT_CL_ComunaProvincia.min.json';
 
-        $jsonRegiones = json_decode(File::get($pathRegiones), false, 512, JSON_UNESCAPED_UNICODE);
-        $jsonProvincias = json_decode(File::get($pathProvincias), false, 512, JSON_UNESCAPED_UNICODE);
-        $jsonComunas = json_decode(File::get($pathComunas), false, 512, JSON_UNESCAPED_UNICODE);
+        $jsonRegiones = Direccion::leeRegiones();
+        $jsonProvincias = Direccion::leeProvincias();
+        $jsonComunas = Direccion::leeComunas();
         
         $regiones = [];
         $provincias = [];
@@ -344,35 +293,14 @@ class Plugin extends PluginBase
     }
 
     private function setUserGeocode($model){
+        $dir = new Direccion();
         $direccion = urlencode($model->getDireccionCompleta());
+        
+        $g = $dir->getGeocode($direccion);
 
-        $apiKey = env('GOOGLE_API_KEY');
-
-        Log::info('[GOOGLE MAPS API] Generando consulta');
-
-        $client = new GuzzleClient();
-        $apiResponse = $client->get("https://maps.googleapis.com/maps/api/geocode/json?address={$direccion}&key={$apiKey}");
-        if($apiResponse->getStatusCode() == 200){
-            $response = json_decode($apiResponse->getBody());
+        if($g !== null){
+            $model->geocode = $g;
         }
-
-        Log::info('[GOOGLE MAPS API] Respuesta ' . $apiResponse->getStatusCode());
-
-        $geocode = $model->geocode;
-
-        if($response->status === 'OK'){
-            $res = $response->results[0];
-            $geocode = [
-                'location' => [
-                    'lat' => $res->geometry->location->lat,
-                    'lng' => $res->geometry->location->lng
-                ],
-                'place_id' => $res->place_id
-            ];
-        }
-
-        $model->geocode = $geocode;
-
 
         return true;        
     }

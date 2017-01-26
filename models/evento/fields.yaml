@@ -35,10 +35,16 @@ secondaryTabs:
             tab: anguro.capse::lang.evento.tab_manage
             label: anguro.capse::lang.evento.cuando
             span: left
-            cssClass: checkbox-align
             type: datepicker
             mode: datetime
-
+        
+        direccion:
+            tab: anguro.capse::lang.evento.tab_manage
+            label: anguro.capse::lang.evento.direccion
+            span: left
+            comment: anguro.capse::lang.evento.direccion_comment
+            type: text
+            cssClass: direccionEvento
 
         featured_images:
             tab: anguro.capse::lang.evento.tab_manage

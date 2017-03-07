@@ -3,6 +3,7 @@
 use File;
 use Log;
 use GuzzleHttp\Client as GuzzleClient;
+use Anguro\Capse\Models\Setting;
 
 class DireccionManager {
 
@@ -67,19 +68,19 @@ class DireccionManager {
     }
 
     public static function leeRegiones(){
-        $jsonFile = __DIR__ . '../../assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
+        $jsonFile = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_Regiones.min.json';
         $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
         return $json;
     }
 
     public static function leeProvincias(){
-        $jsonFile = __DIR__ . '../../assets/js/bdcut-cl/BDCUT_CL_ProvinciaRegion.min.json';
+        $jsonFile = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_ProvinciaRegion.min.json';
         $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
         return $json;
     }
 
     public static function leeComunas(){
-        $jsonFile = __DIR__ . '../../assets/js/bdcut-cl/BDCUT_CL_ComunaProvincia.min.json';
+        $jsonFile = __DIR__ . '/../assets/js/bdcut-cl/BDCUT_CL_ComunaProvincia.min.json';
         $json = json_decode(File::get($jsonFile), false, 512, JSON_UNESCAPED_UNICODE);
         return $json;
     }
@@ -88,7 +89,7 @@ class DireccionManager {
 
         $url = "https://maps.googleapis.com/maps/api/geocode/json?";
         $addr = "address=" . $direccion;
-        $key = "key=" . env("GOOGLE_API_KEY");
+        $key = "key=" . Setting::get('google_maps_key');
         $urlConcat = $url . $addr . "&" . $key;
 
         $client = new GuzzleClient();

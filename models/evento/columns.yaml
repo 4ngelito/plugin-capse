@@ -6,6 +6,13 @@ columns:
     titulo:
         label: anguro.capse::lang.evento.titulo
         searchable: true
+        
+    cuando:
+        label: anguro.capse::lang.evento.cuando
+        type: date
+        
+    direccion:
+        label: anguro.capse::lang.evento.direccion        
 
     # author:
     #   label: Author
@@ -22,7 +29,3 @@ columns:
         label: anguro.capse::lang.evento.updated
         type: date
         invisible: true
-
-    cuando:
-        label: anguro.capse::lang.evento.cuando
-        type: date

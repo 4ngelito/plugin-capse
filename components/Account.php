@@ -2,7 +2,6 @@
 
 use Lang;
 use Auth;
-use File;
 use Input;
 use Request;
 use Redirect;
@@ -12,7 +11,6 @@ use Flash;
 use RainLab\User\Models\Settings as UserSettings;
 use RainLab\User\Components\Account as UserAccountComponent;
 use Exception;
-use GuzzleHttp\Client as GuzzleClient;
 use Anguro\Capse\Classes\DireccionManager as Direccion;
 
 class Account extends UserAccountComponent
@@ -254,7 +252,7 @@ class Account extends UserAccountComponent
         $emailUsuario = $this->user() ? $this->user()->email : null;
         
         if($email !== $emailUsuario && Auth::findUserByLogin($email)){
-            Flash::error(Lang::get('anguro.capse::lang.messages.email_usado'));
+            Flash::error(Lang::get('anguro.capse::langz.messages.email_usado'));
             $r['response'] = 'error';
         }
         return $r;

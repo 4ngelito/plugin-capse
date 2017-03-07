@@ -17,7 +17,13 @@
         <div id="mapaWrapper">
             <div id="map"></div>        
         </div>
-    </div>
+    </div>    
+    <script>
+        $(document).ready(function() {
+            var loc = <?php echo $eventoLocation; ?>;
+           markerSelected = addMarker(loc,map);
+        });
+    </script>
 
 <?php else: ?>
 

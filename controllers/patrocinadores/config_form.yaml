@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Patrocinador
+
+# Model Form Field configuration
+form: $/anguro/capse/models/patrocinador/fields.yaml
+
+# Model Class name
+modelClass: Anguro\Capse\Models\Patrocinador
+
+# Default redirect location
+defaultRedirect: anguro/capse/patrocinadores
+
+# Create page
+create:
+    title: Create Patrocinador
+    redirect: anguro/capse/patrocinadores/update/:id
+    redirectClose: anguro/capse/patrocinadores
+
+# Update page
+update:
+    title: Edit Patrocinador
+    redirect: anguro/capse/patrocinadores
+    redirectClose: anguro/capse/patrocinadores
+
+# Preview page
+preview:
+    title: Preview Patrocinador

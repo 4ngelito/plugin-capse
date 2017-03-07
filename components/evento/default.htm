@@ -1,3 +1,50 @@
-<p>This is the default markup for component Evento</p>
+{% set evento = __SELF__.evento %}
+<div class="row">
+    <div class="col m8 s12">
+        {{ evento.descripcion_html|raw }}
+    </div>
+    <div class="col m4 s12">
+        <div id="map"></div>
+    </div>
+</div>
+<div class="row">
+    <div class=" slider col s12">
+    {% if evento.featured_images.count %}
+        <ul class="slides">
+            {% for image in evento.featured_images %}
+                <li>
+                    <img
+                        data-src="{{ image.filename }}"
+                        src="{{ image.path }}"
+                        alt="{{ image.description }}"/>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
+</div>
 
-<small>You can delete this file if you want</small>
+<script type="text/javascript">
+
+var map;
+function initMap() {
+    var loc = {lat: {{ evento.geocode.location.lat }}, lng: {{evento.geocode.location.lng}} };
+    
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: loc,
+        zoom: 17
+    });
+    
+    var marker = new google.maps.Marker({
+        position: loc,
+        map: map,
+        title: "{{ evento.titulo }}"
+    });
+
+}
+
+</script>
+<script async defer
+  src="https://maps.googleapis.com/maps/api/js?key={{google_maps_key}}&callback=initMap">
+</script>
+

@@ -4,7 +4,7 @@
 
 scopes:
 
-    published_date:
+    cuando:
 
         # Filter name
         label: anguro.capse::lang.eventos.filter_date

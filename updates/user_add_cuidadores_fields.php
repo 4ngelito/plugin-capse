@@ -29,21 +29,24 @@ class UserAddCuidadoresFields extends Migration
 
     public function down()
     {
-        Schema::table('users', function($table)
-        {
-            $table->dropColumn([
-                'rut',
-                'fecha_nacimiento',
-                'sexo',
-                'telefonos',
-                'direccion',
-                'comuna',
-                'provincia',
-                'region',
-                'pacientes',
-                'geocode'
-            ]);
-        });
+        if (Schema::hasColumns('users', ['rut', 'sexo', 'geocode'])) {
+            
+            Schema::table('users', function($table)
+            {
+                $table->dropColumn([
+                    'rut',
+                    'fecha_nacimiento',
+                    'sexo',
+                    'telefonos',
+                    'direccion',
+                    'comuna',
+                    'provincia',
+                    'region',
+                    'pacientes',
+                    'geocode'
+                ]);
+            });
+        }
     }
 
 }

@@ -1,0 +1,50 @@
+{% set eventos = __SELF__.eventos %}
+
+<div class="eventos-list">
+    {% for evento in eventos %}
+    <div class="evento row">        
+        <div class="evento-parallax col s12 m4">
+            <div class="lt-parallax-header parallax-container" style="height: 250px;">
+                <div class="lt-parallax parallax"><img src="{{ evento.mapUrl }}" alt="image"></div>
+                <div class="lt-parallax-content">
+                    <a href="{{ evento.url }}">
+                    <div class="valign-wrapper" style="height: 250px;">
+                        <div class="evento-info valign">
+                            <h3 class="evento-header col s12">{{ evento.titulo }}</h3>
+                            <i class="material-icons">link</i>
+                            <h6 class="evento-cuando col s12 valign-wrapper"><i class="material-icons">event</i> {{ evento.cuando.toFormattedDateString }}</h6>
+                            <h6 class="evento-direccion col s12 valign-wrapper"><i class="material-icons">place</i> {{ evento.direccion }}</h6>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="evento-contenido col s12 m8 valign-wrapper">
+            <div class="valign">
+                <p class="evento-descripcion">{{ evento.summary }}</p>                
+            </div>            
+        </div>
+    </div>
+    {% else %}
+        <p class="no-data">{{ noEventosMessage }}</p>
+    {% endfor %}
+</div>
+
+{% if eventos.lastPage > 1 %}
+    <ul class="pagination">
+        {% if eventos.currentPage > 1 %}
+            <li><a href="{{ this.page.baseFileName|page({ (pageParam): (eventos.currentPage-1) }) }}">&larr; Prev</a></li>
+        {% endif %}
+
+        {% for page in 1..eventos.lastPage %}
+            <li class="{{ eventos.currentPage == page ? 'active' : null }}">
+                <a href="{{ this.page.baseFileName|page({ (pageParam): page }) }}">{{ page }}</a>
+            </li>
+        {% endfor %}
+
+        {% if eventos.lastPage > eventos.currentPage %}
+            <li><a href="{{ this.page.baseFileName|page({ (pageParam): (eventos.currentPage+1) }) }}">Next &rarr;</a></li>
+        {% endif %}
+    </ul>
+{% endif %}

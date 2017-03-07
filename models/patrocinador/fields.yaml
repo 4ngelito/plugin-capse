@@ -1,0 +1,38 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:        
+    nombre:
+        label: anguro.capse::lang.patrocinador.nombre
+        description: anguro.capse::lang.patrocinador.nombre_descripcion
+        type: text
+        required: true
+        span: left
+
+    imagen:
+        label: anguro.capse::lang.patrocinador.imagen
+        description: anguro.capse::lang.patrocinador.imagen_descripcion
+        span: right
+        required: true
+        type: fileupload
+        mode: image
+        comment: 'Se recomienda una imagen de 266 x 150 pixeles o mayor'
+        imageHeight: 150
+        imageWidth: 266
+        useCaption: false
+        thumbOptions:
+            mode: auto
+            offset:
+                - 0
+                - 0
+            quality: 90
+            sharpen: 0
+            extension: auto
+            
+    url:
+        label: anguro.capse::lang.patrocinador.url
+        description: anguro.capse::lang.patrocinador.url_descripcion
+        type: text
+        span: left
+        placeholder: 'http://'

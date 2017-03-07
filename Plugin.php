@@ -1,6 +1,5 @@
 <?php namespace Anguro\Capse;
 
-//use Backend;
 use Yaml;
 use File;
 use Lang;
@@ -92,7 +91,15 @@ class Plugin extends PluginBase
                 }
 
                 if (is_string($group)) {
-                   $group = UserGroup::whereCode($group)->first();
+                    $str = $group;
+                    $group = UserGroup::whereCode($group)->first();
+                    if(!$group){
+                        $g = new UserGroup;
+                        $g->name = ucwords($str);
+                        $g->code = urlencode($str);
+                        $g->save();
+                        $group = $g;
+                    }
 
                    return $model->groups()->save($group);
                 }
@@ -169,6 +176,24 @@ class Plugin extends PluginBase
 
         return [
             'Anguro\Capse\Components\Account' => 'cuentaUsuario',
+            'Anguro\Capse\Components\Eventos' => 'eventos',
+            'Anguro\Capse\Components\Evento' => 'evento',
+            'Anguro\Capse\Components\Patrocinador' => 'patrocinadores',
+        ];
+    }
+    
+    public function registerSettings()
+    {
+        return [
+            'settings' => [
+                'label'       => 'anguro.capse::lang.settings.menu_label',
+                'description' => 'anguro.capse::lang.settings.menu_description',
+                'category'    => 'anguro.capse::lang.plugin.name',
+                'icon'        => 'icon-cog',
+                'class'       => 'Anguro\Capse\Models\Setting',
+                'order'       => 500,
+                'permissions' => ['anguro.capse.access_settings'],
+            ]
         ];
     }
 
@@ -187,6 +212,10 @@ class Plugin extends PluginBase
             'anguro.capse.access_other_eventos' => [
                 'tab'   => 'anguro.capse::lang.evento.tab',
                 'label' => 'anguro.capse::lang.evento.access_other_eventos'
+            ],
+            'anguro.capse.access_settings' => [
+                'tab'   => 'anguro.capse::lang.plugin.name',
+                'label' => 'anguro.capse::lang.permission.settings'
             ]
         ];
     }
@@ -218,6 +247,28 @@ class Plugin extends PluginBase
                         'icon'        => 'icon-copy',
                         'url'         => Backend::url('anguro/capse/eventos'),
                         'permissions' => ['anguro.capse.access_eventos']
+                    ]
+                ]
+            ],
+            'patrocinador' => [
+                'label'       => 'anguro.capse::lang.patrocinador.menu_label',
+                'url'         => Backend::url('anguro/capse/patrocinadores'),
+                'icon'        => 'icon-pencil',
+                'permissions' => ['anguro.capse.*'],
+                'order'       => 30,
+
+                'sideMenu' => [
+                    'new_patrocinador' => [
+                        'label'       => 'anguro.capse::lang.patrocinador.new_patrocinador',
+                        'icon'        => 'icon-plus',
+                        'url'         => Backend::url('anguro/capse/patrocinadores/create'),
+                        'permissions' => ['anguro.capse.*']
+                    ],
+                    'patrocinador' => [
+                        'label'       => 'anguro.capse::lang.patrocinador.patrocinadores',
+                        'icon'        => 'icon-copy',
+                        'url'         => Backend::url('anguro/capse/patrocinadores'),
+                        'permissions' => ['anguro.capse.*']
                     ]
                 ]
             ]

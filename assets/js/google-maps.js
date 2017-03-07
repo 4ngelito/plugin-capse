@@ -30,10 +30,10 @@ function launchMap(){
 	var myLatLng = { lat: -33.451190, lng: -70.654388 };
 
 	// Create a map object and specify the DOM element for display.
-	var map = new google.maps.Map(document.getElementById('map'), {
-		center: myLatLng,
-		scrollwheel: false,
-		zoom: 10
+	map = new google.maps.Map(document.getElementById('map'), {
+            center: myLatLng,
+            scrollwheel: false,
+            zoom: 10
 	});
 
 	var marker = new google.maps.Marker({
@@ -79,22 +79,22 @@ function launchMap(){
 	});
 
 	$.ajax({
-		url: 'getUsuariosGeocodes',
+		url: '/backend/anguro/capse/eventos/getUsuariosGeocodes',
 		type: 'POST',
 		cache: false,
 		success: function(data){
-			if(data !== undefined){
-				data.geocodes.forEach(function(el) {
-					addMarker(el.geocode.location, map);
-				}, this);
-			}
-			else {
-				console.log('getUsuariosGeocodes error!');
-			}
+                    if(data !== undefined && data.n > 0){
+                        data.geocodes.forEach(function(el) {
+                            addMarker(el.geocode.location, map);
+                        }, this);
+                    }
+                    else {
+                        console.warn('0 Direcciones registradas');
+                    }
 		}
 	});
 
-	var markerSelected = null;
+	markerSelected = null;
 
 	map.addListener('click', function(e) {
 		if(markerSelected != null){

@@ -1,0 +1,21 @@
+# ===================================
+#  List Column Definitions
+# ===================================
+
+columns:
+    nombre:
+        label: anguro.capse::lang.patrocinador.nombre
+        searchable: true
+    
+    url:
+        label: anguro.capse::lang.patrocinador.url
+        
+    created_at:
+        label: anguro.capse::lang.patrocinador.created
+        type: date
+        invisible: true
+
+    updated_at:
+        label: anguro.capse::lang.patrocinador.updated
+        type: date
+        invisible: true

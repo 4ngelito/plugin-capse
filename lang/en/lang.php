@@ -8,6 +8,9 @@
         'success_saved' => 'Datos actualizados correctamente.'
     ],
     'evento' => [
+        'evento' => 'Evento',
+        'descripcion' => 'Muestra el evento',
+        
         'menu_label' => 'Eventos',
         'titulo' => 'Titulo',
         'titulo_placeholder' => 'Nombre del Evento',
@@ -35,6 +38,8 @@
         'direccion_comment' => 'Seleccione un punto en el mapa para definir la dirección'
     ],
     'eventos' => [
+        'eventos' => 'Eventos',
+        'descripcion' => 'Lista los eventos disponibles.',
         'filter_date' => 'entre fechas',
         'eliminacion_masiva' => 'Los eventos fueron eliminados.'
     ],
@@ -64,5 +69,51 @@
         'email_usado' => 'El email indicado ya está en uso',
         'password_missmatch' => 'Las contraseñas no coinciden!'
 
+    ],
+    'permissions' => [
+        'settings' => 'Administrar Plugin',
+    ],
+    'patrocinador' => [
+        'patrocinador' => 'Socios',
+        'description' => 'Imagenes de Socios registrados',
+        
+        'nombre' => 'Nombre',
+        'nombre_descripcion' => 'Nombre del Socio',
+        'url' => 'Sitio Web',
+        'url_descripcion' => 'URL del sitio web',
+        'imagen' => 'Imagen',
+        'imagen_descripcion' => 'Imagen a mostrar',
+        'created' => 'Registrado el',
+        'updated' => 'Actualizado el',
+        
+        'menu_label' => 'Socios',
+        'new_patrocinador' => 'Nuevo Socio',
+        'patrocinadores' => 'Socio'
+    ],
+    
+    'settings' => [
+        
+        'eventos_pagination' => 'Page number',
+        'eventos_pagination_description' => 'This value is used to determine what page the user is on.',
+        'eventos_per_page' => 'Posts per page',
+        'eventos_per_page_validation' => 'Invalid format of the eventos per page value',
+        'eventos_no_eventos' => 'No eventos message',
+        'eventos_no_eventos_description' => 'Message to display in the blog post list in case if there are no eventos. This property is used by the default component partial.',
+        'eventos_order' => 'Post order',
+        'eventos_order_description' => 'Attribute on which the eventos should be ordered',
+        'eventos_post' => 'Post page',
+        'eventos_post_description' => 'Name of the blog post page file for the "Learn more" links. This property is used by the default component partial.',
+        
+        'menu_label' => 'Location settings',
+        'menu_description' => 'Manage location based settings.',
+        'google_maps_key' => 'Google Maps API Key',
+        'google_maps_key_comment' => 'If you plan on using Google Maps services, enter the API key for it here.',
+        
+        'evento_slug' => 'Slug del Evento',
+        'evento_slug_description' => 'Look up the blog post using the supplied slug value.',
+        
+        'patrocinador_no_patrocinador' => 'Mensaje sin Socio',
+        'patrocinador_no_patrocinador_description' => 'Mensaje de ningun socio registrado'
+        
     ]
 ];

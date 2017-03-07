@@ -1,0 +1,9 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+fields:
+
+    # Google Maps API Key
+    google_maps_key:
+        label: anguro.capse::lang.settings.google_maps_key
+        comment: anguro.capse::lang.settings.google_maps_key_comment

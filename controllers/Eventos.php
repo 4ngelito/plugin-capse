@@ -1,11 +1,12 @@
 <?php namespace Anguro\Capse\Controllers;
 
 use BackendMenu;
-use File;
 use Response;
 use Rainlab\User\Models\User as UserModel;
 use Backend\Classes\Controller;
 use Anguro\Capse\Models\Evento;
+use System\Classes\SettingsManager;
+use Anguro\Capse\Models\Setting;
 
 /**
  * Eventos Back-end Controller
@@ -19,12 +20,15 @@ class Eventos extends Controller
 
     public $formConfig = 'config_form.yaml';
     public $listConfig = 'config_list.yaml';
+    
+    public $requiredPermissions = ['anguro.capse.access_settings'];
 
     public function __construct()
     {
         parent::__construct();
 
         BackendMenu::setContext('Anguro.Capse', 'capse', 'eventos');
+        SettingsManager::setContext('Anguro.Capse', 'anguro_capse');
     }
 
     public function index()
@@ -45,27 +49,32 @@ class Eventos extends Controller
         $this->addJs('/plugins/anguro/capse/assets/js/evento-form.js');
         $this->addCss('/plugins/anguro/capse/assets/css/google-maps.css');
 
-        $gMapsApiKey = env('GOOGLE_API_KEY');
+        $gMapsApiKey = Setting::get('google_maps_key');
         $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&libraries=places";
 
         $this->addJs('/plugins/anguro/capse/assets/js/google-maps.js');
-        $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']);        
+        //$this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']);
+        $this->addJs($gMapsScript);
 
         return $this->asExtension('FormController')->create();
     }
 
     public function update($recordId = null)
     {
+        $evento = Evento::find($recordId);
+        $this->vars['eventoLocation'] = "{lat: {$evento->geocode['location']['lat']}, lng:{$evento->geocode['location']['lng']}}";
+        
         $this->bodyClass = 'compact-container';
         $this->addCss('/plugins/anguro/capse/assets/css/rainlab.blog-preview.css');
         $this->addJs('/plugins/anguro/capse/assets/js/evento-form.js');
         $this->addCss('/plugins/anguro/capse/assets/css/google-maps.css');
 
-        $gMapsApiKey = env('GOOGLE_API_KEY');
-        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&callback=launchMap";
+        $gMapsApiKey = Setting::get('google_maps_key');
+        $gMapsScript = "https://maps.googleapis.com/maps/api/js?key={$gMapsApiKey}&libraries=places";
 
         $this->addJs('/plugins/anguro/capse/assets/js/google-maps.js');
-        $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']); 
+//        $this->addJs($gMapsScript, ['async' => 'async', 'defer' => 'defer']); 
+        $this->addJs($gMapsScript);
 
         return $this->asExtension('FormController')->update($recordId);
     }

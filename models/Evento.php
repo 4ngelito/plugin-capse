@@ -1,15 +1,17 @@
 <?php namespace Anguro\Capse\Models;
 
 use Model;
-use Carbon\Carbon;
 use Str;
 use Html;
-use Lang;
 use Markdown;
+use Storage;
+use Log;
 use RainLab\Blog\Classes\TagProcessor;
 use Cms\Classes\Page as CmsPage;
 use Cms\Classes\Theme;
 use Anguro\Capse\Classes\DireccionManager as Direccion;
+use GuzzleHttp\Client as GuzzleClient;
+use Anguro\Capse\Models\Setting;
 
 /**
  * Evento Model
@@ -60,7 +62,7 @@ class Evento extends Model
      * The attributes that should be mutated to dates.
      * @var array
      */
-    protected $dates = ['creado'];
+    protected $dates = ['cuando'];
 
     protected $jsonable = ['geocode'];
 
@@ -89,7 +91,11 @@ class Evento extends Model
 
     public $attachMany = [
         'featured_images' => ['System\Models\File', 'order' => 'sort_order'],
-        'content_images' => ['System\Models\File']
+        'content_images' => ['System\Models\File'],
+    ];
+    
+    public $attachOne = [
+        'map_image' => ['System\Models\File']
     ];
 
     /**
@@ -101,9 +107,69 @@ class Evento extends Model
 
     public function beforeSave()
     {
-        $dir = new Direccion();
         $this->descripcion_html = self::formatHtml($this->descripcion);
-        $this->geocode = $dir->getGeocode($this->direccion);
+        if($this->getOriginal('direccion') !== $this->direccion){
+            $this->setGeocode();
+            $this->getImagenMapa();
+        }
+    }
+    
+    public function getFeaturedImagePath(){
+        $path = null;
+        if($this->featured_images->count()){
+            $path = $this->featured_images->first()->getPath();
+        }
+        return $path;
+    }
+    
+    public function getImagenMapa(){
+        $lat = (double)$this->geocode['location']['lat'];
+        $lng = (double)$this->geocode['location']['lng'];
+        $url = "https://maps.googleapis.com/maps/api/staticmap?";
+        $center = "center=" . $lat .','. ($lng - 0.001);
+        $params = [
+            "size" => "250x350",
+            "zoom" => 16,
+            "markers" => $this->direccion
+        ];
+        $key = "key=" . Setting::get('google_maps_key');
+        
+        $param = '';
+        foreach($params as $k => $v){
+            $param .= $k . '=' . urlencode($v) . '&';
+        }
+        
+        $urlConcat = $url . $center . "&" . $param . $key;
+        
+        $client = new GuzzleClient();
+        
+        Log::info('[GOOGLE STATIC MAP API] Generando consulta');
+        $apiResponse = $client->get($urlConcat);
+        
+        if($apiResponse->getStatusCode() == 200){
+            $data = $apiResponse->getBody();
+        }
+        
+        Log::info('[GOOGLE STATIC MAP API] Respuesta ' . $apiResponse->getStatusCode());        
+        
+        $aux = $this->map_image;
+        $file = new \System\Models\File;
+        if(Storage::put('mapa.png', $data)){
+            if($imagen = $this->map_image){
+                $imagen->delete();
+            }
+            $file->fromFile('storage/app/mapa.png');
+            $file->is_public = true;
+            $file->save();
+            $aux = $file;
+            Storage::delete('mapa.png');
+        }
+        
+        return $this->map_image = $aux;       
+    }
+    
+    public function setMapUrl(){
+        return $this->mapUrl = $this->map_image->getPath();
     }
 
     /**
@@ -117,21 +183,17 @@ class Evento extends Model
             'id' => $this->id,
             'slug' => $this->slug,
         ];
-/*
-        if (array_key_exists('categories', $this->getRelations())) {
-            $params['category'] = $this->categories->count() ? $this->categories->first()->slug : null;
-        }
-*/
+        
         //expose published year, month and day as URL parameters
-        if ($this->published) {
-            $params['year'] = $this->published_at->format('Y');
-            $params['month'] = $this->published_at->format('m');
-            $params['day'] = $this->published_at->format('d');
+        if ($this->cuando) {
+            $params['year'] = $this->cuando->format('Y');
+            $params['month'] = $this->cuando->format('m');
+            $params['day'] = $this->cuando->format('d');
         }
-
+        
         return $this->url = $controller->pageUrl($pageName, $params);
     }
-
+    
     /**
      * Used to test if a certain user has permission to edit post,
      * returns TRUE if the user is the owner or has other posts access.
@@ -166,7 +228,7 @@ class Evento extends Model
      */
     public function getHasSummaryAttribute()
     {
-        $more = '<!-- more -->';
+        $more = '<!-- mas -->';
 
         return (
             !!strlen(trim($this->excerpt)) ||
@@ -189,7 +251,7 @@ class Evento extends Model
             return $excerpt;
         }
 
-        $more = '<!-- more -->';
+        $more = '<!-- mas -->';
         if (strpos($this->descripcion_html, $more) !== false) {
             $parts = explode($more, $this->descripcion_html);
             return array_get($parts, 0);
@@ -362,6 +424,62 @@ class Evento extends Model
         $url = CmsPage::url($page->getBaseFileName(), [$paramName => $category->slug]);
 
         return $url;
+    }
+    
+    protected function setGeocode(){        
+        return $this->geocode = Direccion::getGeocode($this->direccion);
+    }
+    
+    /**
+     * Lists eventos for the front end
+     * @param  array $options Display options
+     * @return self
+     */
+    public function scopeListFrontEnd($query, $options)
+    {
+        /*
+         * Default options
+         */
+        extract(array_merge([
+            'page'       => 1,
+            'perPage'    => 30,
+            'sort'       => 'created_at',
+            'search'     => '',
+        ], $options));
+
+        $searchableFields = ['titulo', 'slug', 'descripcion'];
+
+        /*
+         * Sorting
+         */
+        if (!is_array($sort)) {
+            $sort = [$sort];
+        }
+
+        foreach ($sort as $_sort) {
+
+            if (in_array($_sort, array_keys(self::$allowedSortingOptions))) {
+                $parts = explode(' ', $_sort);
+                if (count($parts) < 2) {
+                    array_push($parts, 'desc');
+                }
+                list($sortField, $sortDirection) = $parts;
+                if ($sortField == 'random') {
+                    $sortField = Db::raw('RAND()');
+                }
+                $query->orderBy($sortField, $sortDirection);
+            }
+        }
+
+        /*
+         * Search
+         */
+        $search = trim($search);
+        if (strlen($search)) {
+            $query->searchWhere($search, $searchableFields);
+        }
+
+        return $query->paginate($perPage, $page);
     }
 
 }

@@ -1,8 +1,10 @@
 1.0.1: First version of Capse
 1.0.2: 
-    - Actualiza tabla de usuarios con campos de cuidadores
+    - Modifica tabla de usuarios con campos de cuidadores
     - user_add_cuidadores_fields.php
-1.0.3:
+    - Crea tabla de Configuracion
+    - create_settings_table.php
     - Crea tabla de eventos
     - create_eventos_table.php
-    
+    - Crea tabla de patrocinadores
+    - create_patrocinadors_table.php

@@ -3,22 +3,22 @@
 # ===================================
 
 # Model List Column configuration
-list: $/anguro/capse/models/evento/columns.yaml
+list: $/anguro/capse/models/patrocinador/columns.yaml
 
 # Model Class name
-modelClass: Anguro\Capse\Models\Evento
+modelClass: Anguro\Capse\Models\Patrocinador
 
 # List Title
-title: Administrar Eventos
+title: Manage Patrocinador
 
 # Link URL for each record
-recordUrl: anguro/capse/eventos/update/:id
+recordUrl: anguro/capse/patrocinadores/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records
 
 # Records to display per page
-recordsPerPage: 25
+recordsPerPage: 20
 
 # Displays the list column set up button
 showSetup: true
@@ -28,7 +28,7 @@ showSorting: true
 
 # Default sorting column
 defaultSort:
-    column: cuando
+    column: nombre
     direction: desc
 
 # Display checkboxes next to each record
@@ -42,6 +42,3 @@ toolbar:
     # Search widget configuration
     search:
         prompt: backend::lang.list.search_prompt
-
-# Filter widget configuration
-filter: config_filter.yaml

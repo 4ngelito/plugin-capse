@@ -1,0 +1,31 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+# Record name
+name: Socio
+
+# Model Form Field configuration
+form: $/anguro/capse/models/socio/fields.yaml
+
+# Model Class name
+modelClass: Anguro\Capse\Models\Socio
+
+# Default redirect location
+defaultRedirect: anguro/capse/socios
+
+# Create page
+create:
+    title: Create Socio
+    redirect: anguro/capse/socios/update/:id
+    redirectClose: anguro/capse/socios
+
+# Update page
+update:
+    title: Edit Socio
+    redirect: anguro/capse/socios
+    redirectClose: anguro/capse/socios
+
+# Preview page
+preview:
+    title: Preview Socio

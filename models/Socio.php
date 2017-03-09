@@ -4,16 +4,16 @@ use Model;
 use October\Rain\Database\Attach\Resizer;
 
 /**
- * Patrocinador Model
+ * Socio Model
  */
-class Patrocinador extends Model
+class Socio extends Model
 {
     use \October\Rain\Database\Traits\Validation;
     
     /**
      * @var string The database table used by the model.
      */
-    public $table = 'anguro_capse_patrocinadors';
+    public $table = 'anguro_capse_socios';
 
     /**
      * @var array Fillable fields
@@ -25,7 +25,7 @@ class Patrocinador extends Model
     /**
      * Validation
      */
-    public $rules = ['nombre' => 'required'
+    public $rules = ['nombre' => 'required|unique:anguro_capse_socios'
         , 'imagen' => 'required'
         , 'url' => 'active_url'
     ];

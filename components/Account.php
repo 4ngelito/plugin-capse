@@ -38,14 +38,21 @@ class Account extends UserAccountComponent
      */
     public function onRun()
     {   
+        $titulo = "Plataforma del Cuidador";
+        
         $u = Auth::getUser();
         $region = isset($u->region) ? $u->region : null;
         $provincia = isset($u->provincia) ? $u->provincia : null;
+        if($u){
+            $titulo = "Hola ".$u->name."!";
+        }
         $this->page['__PARENT__'] = '_account';
         $this->page['__PREFIX__'] = 'cuidador_';
         $this->page['regiones'] = Direccion::getRegiones();
         $this->page['provincias'] = Direccion::getProvincias($region);
         $this->page['comunas'] = Direccion::getComunas($provincia);
+        
+        $this->page['titulo'] = ucwords($titulo);
         
         $this->addJs('/plugins/anguro/capse/assets/js/capse.js');
         $this->addCss('/plugins/anguro/capse/assets/css/capse.css');

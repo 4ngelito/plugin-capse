@@ -1,0 +1,11 @@
+# ===================================
+#  Form Field Definitions
+# ===================================
+
+fields:
+    pregunta:
+        label: anguro.capse::lang.faq.pregunta
+        
+    respuesta:
+        label: anguro.capse::lang.faq.respuesta
+        type: richeditor

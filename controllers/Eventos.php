@@ -21,13 +21,13 @@ class Eventos extends Controller
     public $formConfig = 'config_form.yaml';
     public $listConfig = 'config_list.yaml';
     
-    public $requiredPermissions = ['anguro.capse.access_settings'];
+    public $requiredPermissions = ['anguro.capse.access_settings','anguro.capse.access_eventos'];
 
     public function __construct()
     {
         parent::__construct();
 
-        BackendMenu::setContext('Anguro.Capse', 'capse', 'eventos');
+        BackendMenu::setContext('Anguro.Capse', 'eventos');
         SettingsManager::setContext('Anguro.Capse', 'anguro_capse');
     }
 

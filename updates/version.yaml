@@ -6,5 +6,7 @@
     - create_settings_table.php
     - Crea tabla de eventos
     - create_eventos_table.php
-    - Crea tabla de patrocinadores
-    - create_patrocinadors_table.php
+    - Crea tabla de socios
+    - create_socios_table.php
+    - Crea tabla de faqs
+    - create_faqs_table.php

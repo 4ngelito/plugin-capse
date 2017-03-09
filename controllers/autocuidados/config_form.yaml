@@ -1,0 +1,18 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: anguro.capse::lang.autocuidados.create_autocuidado
+form: ~/plugins/rainlab/blog/models/post/fields.yaml
+modelClass: RainLab\Blog\Models\Post
+defaultRedirect: anguro/capse/autocuidados
+
+create:
+    title: Nuevo Autocuidado
+    redirect: anguro/capse/autocuidados/update/:id
+    redirectClose: anguro/capse/autocuidados
+
+update:
+    title: Actualizar Autocuidado
+    redirect: anguro/capse/autocuidados
+    redirectClose: anguro/capse/autocuidados

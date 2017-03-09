@@ -1,0 +1,12 @@
+{% set preguntas = __SELF__.preguntas %}
+
+<ul class="collapsible popout faq-list" data-collapsible="accordion">
+    {% for faq in preguntas %}
+    <li>
+      <div class="collapsible-header"><i class="material-icons">question_answer</i>{{faq.pregunta}}</div>
+      <div class="collapsible-body"><span>{{faq.respuesta|raw}}</span></div>
+    </li>
+    {% else %}
+        <li class="no-data">Sin Preguntas Registradas</li>
+    {% endfor %}
+</ul>

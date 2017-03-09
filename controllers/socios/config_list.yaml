@@ -3,16 +3,16 @@
 # ===================================
 
 # Model List Column configuration
-list: $/anguro/capse/models/patrocinador/columns.yaml
+list: $/anguro/capse/models/socio/columns.yaml
 
 # Model Class name
-modelClass: Anguro\Capse\Models\Patrocinador
+modelClass: Anguro\Capse\Models\Socio
 
 # List Title
-title: Manage Patrocinador
+title: Manage Socios
 
 # Link URL for each record
-recordUrl: anguro/capse/patrocinadores/update/:id
+recordUrl: anguro/capse/socios/update/:id
 
 # Message to display if the list is empty
 noRecordsMessage: backend::lang.list.no_records

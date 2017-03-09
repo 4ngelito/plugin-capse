@@ -73,8 +73,8 @@
     'permissions' => [
         'settings' => 'Administrar Plugin',
     ],
-    'patrocinador' => [
-        'patrocinador' => 'Socios',
+    'socio' => [
+        'socio' => 'Socios',
         'description' => 'Imagenes de Socios registrados',
         
         'nombre' => 'Nombre',
@@ -87,8 +87,11 @@
         'updated' => 'Actualizado el',
         
         'menu_label' => 'Socios',
-        'new_patrocinador' => 'Nuevo Socio',
-        'patrocinadores' => 'Socio'
+        'new_socio' => 'Nuevo Socio',
+        'socios' => 'Socios',
+        
+        'tab' => 'Permisos de Socios',
+        'access_socios' => 'Acceso a los socios registrados'
     ],
     
     'settings' => [
@@ -112,8 +115,42 @@
         'evento_slug' => 'Slug del Evento',
         'evento_slug_description' => 'Look up the blog post using the supplied slug value.',
         
-        'patrocinador_no_patrocinador' => 'Mensaje sin Socio',
-        'patrocinador_no_patrocinador_description' => 'Mensaje de ningun socio registrado'
+        'socio_no_socio' => 'Mensaje sin Socio',
+        'socio_no_socio_description' => 'Mensaje de ningun socio registrado'
         
+    ],
+    'cuidados' => [
+        'create_cuidado' => 'Nuevo Cuidado',
+        'list_title' => 'Cuidados',
+        'new_cuidado' => 'Nuevo Cuidado',
+        'cuidados' => 'Cuidados',
+        'menu_label' => 'Cuidados'
+    ],
+    'cuidado' => [
+        'return_to_cuidados' => 'Volver al listado de Cuidados'
+    ],
+    'autocuidados' => [
+        'create_autocuidado' => 'Nuevo Autocuidado',
+        'list_title' => 'Autocuidados',
+        'new_autocuidado' => 'Nuevo Autocuidado',
+        'autocuidados' => 'Autocuidados',
+        'menu_label' => 'Autocuidados'
+    ],
+    'autocuidado' => [
+        'return_to_autocuidados' => 'Volver al listado de Autocuidados'
+    ],
+    'faqs' => [
+        'menu_label' => 'Preg. Frec.',
+        'new_faq' => 'Nueva Pregunta',
+        'faqs' => 'Preguntas Frecuentes',
+        
+        'access_faqs' => 'Acceso a las preguntas frecuentes registradas',
+        'faqs' => 'Preguntas Frecuentes',
+        'descripcion' => 'Muestra el listado de preguntas con sus respuestas'
+    ],
+    'faq' => [
+        'pregunta' => 'Pregunta',
+        'created' => 'Fecha Creado',
+        'respuesta' => 'Respuesta'
     ]
 ];

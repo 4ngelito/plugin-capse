@@ -4,18 +4,18 @@
 
 columns:
     nombre:
-        label: anguro.capse::lang.patrocinador.nombre
+        label: anguro.capse::lang.socio.nombre
         searchable: true
     
     url:
-        label: anguro.capse::lang.patrocinador.url
+        label: anguro.capse::lang.socio.url
         
     created_at:
-        label: anguro.capse::lang.patrocinador.created
+        label: anguro.capse::lang.socio.created
         type: date
         invisible: true
 
     updated_at:
-        label: anguro.capse::lang.patrocinador.updated
+        label: anguro.capse::lang.socio.updated
         type: date
         invisible: true

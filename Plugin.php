@@ -10,6 +10,10 @@ use System\Classes\PluginBase;
 use RainLab\User\Models\User as UserModel;
 use RainLab\User\Models\UserGroup as UserGroup;
 use RainLab\User\Controllers\Users as UsersController;
+use Rainlab\Blog\Models\Post as PostModel;
+use Rainlab\Blog\Models\Category as CategoryModel;
+use Anguro\Capse\Controllers\Cuidados as CuidadosController;
+use Anguro\Capse\Controllers\Autocuidados as AutocuidadosController;
 use Anguro\Capse\Classes\DireccionManager as Direccion;
 
 
@@ -19,7 +23,7 @@ use Anguro\Capse\Classes\DireccionManager as Direccion;
 class Plugin extends PluginBase
 {
     
-    public $require = ['RainLab.User'];
+    public $require = ['RainLab.User', 'Rainlab.Blog'];
 
     /**
      * Returns information about this plugin.
@@ -30,7 +34,7 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'Capse',
-            'description' => 'No description provided yet...',
+            'description' => 'Plugin creado para el sitio de CuidadoresUnidos.cl',
             'author'      => 'Anguro',
             'icon'        => 'icon-leaf'
         ];
@@ -53,6 +57,34 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        PostModel::extend(function($model){
+            $model->addDynamicMethod('asignaCategoria', function($categoria) use ($model) {
+                $c = $model->categories()->first();
+                if(!$c){
+                    $cat = $this->getCategory($categoria);
+                    return $model->categories = [$cat];
+                }
+                return $c;
+            });
+        });
+        
+        CuidadosController::extendFormFields(function($widget, $model, $context) {
+            if(!$model instanceof PostModel){
+                return;
+            }
+            $widget->removeField('categories');
+            $widget->removeField('excerpt');
+            $model->asignaCategoria('Cuidados');
+        });
+        
+        AutocuidadosController::extendFormFields(function($widget, $model, $context) {
+            if(!$model instanceof PostModel){
+                return;
+            }
+            $widget->removeField('categories');
+            $widget->removeField('excerpt');
+            $model->asignaCategoria('Autocuidados');
+        });
         
         UserModel::extend(function($model) {
             
@@ -96,7 +128,7 @@ class Plugin extends PluginBase
                     if(!$group){
                         $g = new UserGroup;
                         $g->name = ucwords($str);
-                        $g->code = urlencode($str);
+                        $g->code = str_slug($str);
                         $g->save();
                         $group = $g;
                     }
@@ -141,27 +173,16 @@ class Plugin extends PluginBase
 
             return true;
         });
-
-        /*
-         * Register menu items for the RainLab.Pages plugin
+        
+        /**
+         * Quita elementos del menu
          */
-        Event::listen('pages.menuitem.listTypes', function() {
-            return [
-                'capse-evento' => 'anguro.capse::lang.menuitem.capse-evento',
-                'capse-eventos' => 'anguro.capse::lang.menuitem.capse-eventos',
-            ];
-        });
+        Event::listen('backend.menu.extendItems', function($manager) {
 
-        Event::listen('pages.menuitem.getTypeInfo', function($type) {
-            if ($type == 'capse-evento' || $type == 'capse-eventos') {
-                return Evento::getMenuTypeInfo($type);
-            }
-        });
+            $manager->removeMainMenuItem('October.Cms', 'cms');
+            $manager->removeMainMenuItem('October.Cms', 'media');
+            $manager->removeMainMenuItem('Rainlab.Blog', 'blog');
 
-        Event::listen('pages.menuitem.resolveItem', function($type, $item, $url, $theme) {
-            if ($type == 'capse-evento' || $type == 'capse-eventos') {
-                return Evento::resolveMenuItem($item, $url, $theme);
-            }
         });
 
     }
@@ -178,7 +199,8 @@ class Plugin extends PluginBase
             'Anguro\Capse\Components\Account' => 'cuentaUsuario',
             'Anguro\Capse\Components\Eventos' => 'eventos',
             'Anguro\Capse\Components\Evento' => 'evento',
-            'Anguro\Capse\Components\Patrocinador' => 'patrocinadores',
+            'Anguro\Capse\Components\Socios' => 'socios',
+            'Anguro\Capse\Components\Preguntas' => 'preguntasFrecuentes',
         ];
     }
     
@@ -206,16 +228,32 @@ class Plugin extends PluginBase
     {
         return [
             'anguro.capse.access_eventos' => [
-                'tab'   => 'anguro.capse::lang.evento.tab',
+                'tab'   => 'anguro.capse::lang.plugin.name',
                 'label' => 'anguro.capse::lang.evento.access_eventos'
             ],
             'anguro.capse.access_other_eventos' => [
-                'tab'   => 'anguro.capse::lang.evento.tab',
+                'tab'   => 'anguro.capse::lang.plugin.name',
                 'label' => 'anguro.capse::lang.evento.access_other_eventos'
+            ],
+            'anguro.capse.access_socios' => [
+                'tab'   => 'anguro.capse::lang.plugin.name',
+                'label' => 'anguro.capse::lang.socio.access_socios'
             ],
             'anguro.capse.access_settings' => [
                 'tab'   => 'anguro.capse::lang.plugin.name',
                 'label' => 'anguro.capse::lang.permission.settings'
+            ],
+            'anguro.capse.access_cuidados' => [
+                'tab'   => 'anguro.capse::lang.plugin.name',
+                'label' => 'anguro.capse::lang.permission.cuidados'
+            ],
+            'anguro.capse.access_autocuidados' => [
+                'tab'   => 'anguro.capse::lang.plugin.name',
+                'label' => 'anguro.capse::lang.permission.autocuidados'
+            ],
+            'anguro.capse.access_faq' => [
+                'tab'   => 'anguro.capse::lang.plugin.name',
+                'label' => 'anguro.capse::lang.permission.faq'
             ]
         ];
     }
@@ -228,10 +266,11 @@ class Plugin extends PluginBase
     public function registerNavigation()
     {
         return [
-            'evento' => [
+            'eventos' => [
                 'label'       => 'anguro.capse::lang.evento.menu_label',
                 'url'         => Backend::url('anguro/capse/eventos'),
-                'icon'        => 'icon-pencil',
+                'icon'        => 'icon-calendar-check-o',
+                'iconSvg'     => 'plugins/anguro/capse/assets/images/eventos-icon.png',
                 'permissions' => ['anguro.capse.*'],
                 'order'       => 30,
 
@@ -250,25 +289,95 @@ class Plugin extends PluginBase
                     ]
                 ]
             ],
-            'patrocinador' => [
-                'label'       => 'anguro.capse::lang.patrocinador.menu_label',
-                'url'         => Backend::url('anguro/capse/patrocinadores'),
-                'icon'        => 'icon-pencil',
+            'socios' => [
+                'label'       => 'anguro.capse::lang.socio.menu_label',
+                'url'         => Backend::url('anguro/capse/socios'),
+                'icon'        => 'icon-users',
+                'iconSvg'     => 'plugins/anguro/capse/assets/images/socios-icon.png',
                 'permissions' => ['anguro.capse.*'],
                 'order'       => 30,
 
                 'sideMenu' => [
-                    'new_patrocinador' => [
-                        'label'       => 'anguro.capse::lang.patrocinador.new_patrocinador',
+                    'new_socio' => [
+                        'label'       => 'anguro.capse::lang.socio.new_socio',
                         'icon'        => 'icon-plus',
-                        'url'         => Backend::url('anguro/capse/patrocinadores/create'),
-                        'permissions' => ['anguro.capse.*']
+                        'url'         => Backend::url('anguro/capse/socios/create'),
+                        'permissions' => ['anguro.capse.access_socios']
                     ],
-                    'patrocinador' => [
-                        'label'       => 'anguro.capse::lang.patrocinador.patrocinadores',
+                    'socio' => [
+                        'label'       => 'anguro.capse::lang.socio.socios',
                         'icon'        => 'icon-copy',
-                        'url'         => Backend::url('anguro/capse/patrocinadores'),
-                        'permissions' => ['anguro.capse.*']
+                        'url'         => Backend::url('anguro/capse/socios'),
+                        'permissions' => ['anguro.capse.access_socios']
+                    ]
+                ]
+            ],
+            'cuidados' => [
+                'label'       => 'anguro.capse::lang.cuidados.menu_label',
+                'url'         => Backend::url('anguro/capse/cuidados'),
+                'icon'        => 'icon-medkit',
+                'iconSvg'     => 'plugins/anguro/capse/assets/images/cuidados-icon.png',
+                'permissions' => ['anguro.capse.*'],
+                'order'       => 30,
+
+                'sideMenu' => [
+                    'new_post' => [
+                        'label'       => 'anguro.capse::lang.cuidados.new_cuidado',
+                        'icon'        => 'icon-plus',
+                        'url'         => Backend::url('anguro/capse/cuidados/create'),
+                        'permissions' => ['anguro.capse.access_cuidados']
+                    ],
+                    'posts' => [
+                        'label'       => 'anguro.capse::lang.cuidados.cuidados',
+                        'icon'        => 'icon-copy',
+                        'url'         => Backend::url('anguro/capse/cuidados'),
+                        'permissions' => ['anguro.capse.access_cuidados']
+                    ]
+                ]
+            ],
+            'autocuidados' => [
+                'label'       => 'anguro.capse::lang.autocuidados.menu_label',
+                'url'         => Backend::url('anguro/capse/autocuidados'),
+                'icon'        => 'icon-heart-o',
+                'iconSvg'     => 'plugins/anguro/capse/assets/images/autocuidados-icon.png',
+                'permissions' => ['anguro.capse.*'],
+                'order'       => 30,
+
+                'sideMenu' => [
+                    'new_post' => [
+                        'label'       => 'anguro.capse::lang.autocuidados.new_autocuidado',
+                        'icon'        => 'icon-plus',
+                        'url'         => Backend::url('anguro/capse/autocuidados/create'),
+                        'permissions' => ['anguro.capse.access_autocuidados']
+                    ],
+                    'posts' => [
+                        'label'       => 'anguro.capse::lang.autocuidados.autocuidados',
+                        'icon'        => 'icon-copy',
+                        'url'         => Backend::url('anguro/capse/autocuidados'),
+                        'permissions' => ['anguro.capse.access_cuidados']
+                    ]
+                ]
+            ],
+            'faqs' => [
+                'label'       => 'anguro.capse::lang.faqs.menu_label',
+                'url'         => Backend::url('anguro/capse/faqs'),
+                'icon'        => 'icon-question-circle-o',
+                'iconSvg'     => 'plugins/anguro/capse/assets/images/faqs-icon.png',
+                'permissions' => ['anguro.capse.*'],
+                'order'       => 30,
+
+                'sideMenu' => [
+                    'new_faq' => [
+                        'label'       => 'anguro.capse::lang.faqs.new_faq',
+                        'icon'        => 'icon-plus',
+                        'url'         => Backend::url('anguro/capse/faqs/create'),
+                        'permissions' => ['anguro.capse.access_faqs']
+                    ],
+                    'faqs' => [
+                        'label'       => 'anguro.capse::lang.faqs.faqs',
+                        'icon'        => 'icon-copy',
+                        'url'         => Backend::url('anguro/capse/faqs'),
+                        'permissions' => ['anguro.capse.access_faqs']
                     ]
                 ]
             ]
@@ -354,6 +463,18 @@ class Plugin extends PluginBase
         }
 
         return true;        
+    }
+    
+    private function getCategory($nombre){
+        $cat = CategoryModel::whereSlug(str_slug($nombre))->first();
+        if(!$cat instanceof CategoryModel){
+            $c = new CategoryModel;
+            $c->name = $nombre;
+            $c->slug = str_slug($nombre);
+            $c->save();
+            $cat = $c;
+        }
+        return $cat;
     }
     
 

@@ -4,15 +4,15 @@
 
 fields:        
     nombre:
-        label: anguro.capse::lang.patrocinador.nombre
-        description: anguro.capse::lang.patrocinador.nombre_descripcion
+        label: anguro.capse::lang.socio.nombre
+        description: anguro.capse::lang.socio.nombre_descripcion
         type: text
         required: true
         span: left
 
     imagen:
-        label: anguro.capse::lang.patrocinador.imagen
-        description: anguro.capse::lang.patrocinador.imagen_descripcion
+        label: anguro.capse::lang.socio.imagen
+        description: anguro.capse::lang.socio.imagen_descripcion
         span: right
         required: true
         type: fileupload
@@ -31,8 +31,8 @@ fields:
             extension: auto
             
     url:
-        label: anguro.capse::lang.patrocinador.url
-        description: anguro.capse::lang.patrocinador.url_descripcion
+        label: anguro.capse::lang.socio.url
+        description: anguro.capse::lang.socio.url_descripcion
         type: text
         span: left
         placeholder: 'http://'

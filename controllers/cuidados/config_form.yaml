@@ -1,0 +1,18 @@
+# ===================================
+#  Form Behavior Config
+# ===================================
+
+name: anguro.capse::lang.cuidados.create_cuidado
+form: ~/plugins/rainlab/blog/models/post/fields.yaml
+modelClass: RainLab\Blog\Models\Post
+defaultRedirect: anguro/capse/cuidados
+
+create:
+    title: Nuevo Cuidado
+    redirect: anguro/capse/cuidados/update/:id
+    redirectClose: anguro/capse/cuidados
+
+update:
+    title: Actualizar Cuidado
+    redirect: anguro/capse/cuidados
+    redirectClose: anguro/capse/cuidados

@@ -10,6 +10,7 @@
     'evento' => [
         'evento' => 'Evento',
         'descripcion' => 'Muestra el evento',
+        'mapa' => 'Mostrar Mapa',
         
         'menu_label' => 'Eventos',
         'titulo' => 'Titulo',

@@ -2,11 +2,12 @@
 1.0.2: 
     - Modifica tabla de usuarios con campos de cuidadores
     - user_add_cuidadores_fields.php
-    - Crea tabla de Configuracion
-    - create_settings_table.php
-    - Crea tabla de eventos
+1.0.3:
+    - Crea tabla de Eventos
     - create_eventos_table.php
-    - Crea tabla de socios
+1.0.4:    
+    - Crea tabla de Socios
     - create_socios_table.php
-    - Crea tabla de faqs
+1.0.5:    
+    - Crea tabla de Preguntas Frecuentes
     - create_faqs_table.php

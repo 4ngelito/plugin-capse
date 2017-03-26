@@ -2,6 +2,7 @@
 
 use BackendMenu;
 use Response;
+use Request;
 use Rainlab\User\Models\User as UserModel;
 use Backend\Classes\Controller;
 use Anguro\Capse\Models\Evento;
@@ -127,17 +128,20 @@ class Eventos extends Controller
 
     public function getUsuariosGeocodes(){
 
-        $usuarios = UserModel::all();
         $i = 0;
         $geocodes = [];
-
-        foreach($usuarios as $u){
-            if($u->geocode){
-                $geocodes[$i]['geocode'] = $u->geocode;
-                $geocodes[$i]['titulo'] = $u->direccion;
-                $i++;
+        
+        if(Request::isMethod('post')){
+            $usuarios = UserModel::all();
+            foreach($usuarios as $u){
+                if($u->geocode){
+                    $geocodes[$i]['geocode'] = $u->geocode;
+                    $geocodes[$i]['titulo'] = $u->direccion;
+                    $i++;
+                }
             }
         }
+        
         $response = [
             'n' => $i,
             'geocodes' => $geocodes

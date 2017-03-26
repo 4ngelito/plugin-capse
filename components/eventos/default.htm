@@ -12,7 +12,7 @@
                         <div class="evento-info valign">
                             <h3 class="evento-header col s12">{{ evento.titulo }}</h3>
                             <i class="material-icons">link</i>
-                            <h6 class="evento-cuando col s12 valign-wrapper"><i class="material-icons">event</i> {{ evento.cuando.toFormattedDateString }}</h6>
+                            <h6 class="evento-cuando col s12 valign-wrapper"><i class="material-icons">event</i> {{ evento.cuando.toFormattedDateString }}, {{ evento.cuando.format('H:i') }}hrs</h6>
                             <h6 class="evento-direccion col s12 valign-wrapper"><i class="material-icons">place</i> {{ evento.direccion }}</h6>
                         </div>
                     </div>

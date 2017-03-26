@@ -2,11 +2,7 @@
 <div class="row">
     {% for socio in socios %}
     <div class="col s6 m3">
-        <style scoped>
-            .socioLink { opacity: 0.5; transition: opacity 1s ease; }
-            .socioLink:hover { opacity: 1; }
-        </style>
-        <a href="{{ socio.url }}" target="_blank" class="socioLink"><img src="{{ socio.imagen.getPath }}" alt="{{ socio.nombre }}" style="width:100%"/></a>
+        <a href="{{ socio.url }}" target="_blank"><img class="lt-grayscale-opacity-hover-filter responsive-img" src="{{ socio.imagen.getPath }}" alt="{{ socio.nombre }}" style="width:100%"/></a>
     </div>
     {% else %}
         <p class="no-data">{{ noSociosMessage }}</p>

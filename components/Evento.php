@@ -47,6 +47,7 @@ class Evento extends ComponentBase
     protected function prepareVars(){
         $this->page['direccion'] = $this->evento->direccion;
         $this->page['fecha'] = $this->evento->cuando->toFormattedDateString();
+        $this->page['hora'] = $this->evento->cuando->format('H:i');
         $this->page['featuredImagePath'] = $this->evento->getFeaturedImagePath();
         $this->page['google_maps_key'] = Setting::get('google_maps_key');
     }

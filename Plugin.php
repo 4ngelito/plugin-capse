@@ -7,11 +7,14 @@ use Backend;
 use Event;
 use Auth;
 use System\Classes\PluginBase;
+use Backend\Classes\BackendController;
+
 use RainLab\User\Models\User as UserModel;
 use RainLab\User\Models\UserGroup as UserGroup;
 use RainLab\User\Controllers\Users as UsersController;
 use Rainlab\Blog\Models\Post as PostModel;
 use Rainlab\Blog\Models\Category as CategoryModel;
+
 use Anguro\Capse\Controllers\Cuidados as CuidadosController;
 use Anguro\Capse\Controllers\Autocuidados as AutocuidadosController;
 use Anguro\Capse\Classes\DireccionManager as Direccion;
@@ -23,7 +26,7 @@ use Anguro\Capse\Classes\DireccionManager as Direccion;
 class Plugin extends PluginBase
 {
     
-    public $require = ['RainLab.User', 'Rainlab.Blog'];
+    public $require = ['October.Drivers', 'RainLab.User', 'Rainlab.Blog'];
 
     /**
      * Returns information about this plugin.
@@ -47,6 +50,23 @@ class Plugin extends PluginBase
      */
     public function register()
     {
+        CuidadosController::extend(function($controller) {
+            if (!in_array(BackendController::$action, ['create', 'update'])) {
+                return;
+            }
+
+            $controller->addJs('/plugins/rainlab/blogvideo/assets/js/blog-video.js');
+            $controller->addCss('/plugins/rainlab/blogvideo/assets/css/blog-video.css');
+        });
+        
+        AutocuidadosController::extend(function($controller) {
+            if (!in_array(BackendController::$action, ['create', 'update'])) {
+                return;
+            }
+
+            $controller->addJs('/plugins/rainlab/blogvideo/assets/js/blog-video.js');
+            $controller->addCss('/plugins/rainlab/blogvideo/assets/css/blog-video.css');
+        });
 
     }
 
@@ -65,6 +85,14 @@ class Plugin extends PluginBase
                     return $model->categories = [$cat];
                 }
                 return $c;
+            });
+            
+            $model->addDynamicMethod('getVideoFrame', function() use($model){
+                $videoDiv = '';
+                if(preg_match('/<div class=\"video\-wrapper.*?\">(.*?)<\/div>/s',$model->content_html,$videoDiv)){
+                    return $videoDiv[0];
+                }
+                return null;
             });
         });
         

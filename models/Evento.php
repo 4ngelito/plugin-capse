@@ -128,7 +128,7 @@ class Evento extends Model
         $url = "https://maps.googleapis.com/maps/api/staticmap?";
         $center = "center=" . $lat .','. ($lng - 0.001);
         $params = [
-            "size" => "250x350",
+            "size" => "250x400",
             "zoom" => 16,
             "markers" => $this->direccion
         ];

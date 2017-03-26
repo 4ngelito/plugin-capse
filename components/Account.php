@@ -81,17 +81,17 @@ class Account extends UserAccountComponent
             }
 
             $rules = [
+                'name' => 'required|between:3,255',
+                'surname' => 'required|between:3,255',
                 'email'    => 'required|email|between:6,255',
-                'password' => 'required|between:4,255'
+                'password' => 'required|between:4,255',
+                'sexo' => 'required',
+                'fecha_nacimiento' => 'required|date',
+                'rut' => [
+                    'required',
+                    'regex:/^\b\d{7,9}\-[K|0-9]{1}$/'
+                ],
             ];
-            $rules['name'] = 'required|between:3,255';
-            $rules['surname'] = 'required|between:3,255';
-            $rules['rut'] = [
-                'required',
-                'regex:/^\b\d{7,9}\-[K|0-9]{1}$/'
-            ];
-            $rules['fecha_nacimiento'] = 'required|date';
-            $rules['sexo'] = 'required';
 
             if ($this->loginAttribute() == UserSettings::LOGIN_USERNAME) {
                 $rules['username'] = 'required|between:2,255';
@@ -160,16 +160,18 @@ class Account extends UserAccountComponent
             return;
         }
         
-        $rules = ['email' => 'required|email|between:6,255'];
-        $rules['name'] = 'required|between:3,255';
-        $rules['surname'] = 'required|between:3,255';
-        $rules['rut'] = [
-            'required',
-            'regex:/^\b\d{7,9}\-[K|0-9]{1}$/'
+        $rules = [
+            'email' => 'required|email|between:6,255',
+            'name' => 'required|between:3,255',
+            'surname' => 'required|between:3,255',
+            'rut' => [
+                'required',
+                'regex:/^\b\d{7,9}\-[K|0-9]{1}$/'
+            ],
+            'fecha_nacimiento' => 'required|date',
+            'sexo' => 'required',
+            'direccion' => 'string|between:3,255'
         ];
-        $rules['fecha_nacimiento'] = 'required|date';
-        $rules['sexo'] = 'required';
-        $rules['direccion'] = 'string|between:3,255';
         
         if(strlen(post('password'))){
             $rules['password'] = 'confirmed|between:4,255';

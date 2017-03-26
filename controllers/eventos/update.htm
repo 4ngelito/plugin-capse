@@ -12,10 +12,18 @@
         <?= Form::close() ?>
     </div>
     <div class="layout-row">
-        <button type="button" class="btn btn-default toggleMap pull-right">Ocultar Mapa</button>
-    
-        <div id="mapaWrapper">
-            <div id="map"></div>        
+        <a data-toggle="modal" href="#contentMapa" class="btn btn-default btn-lg">Mostrar Mapa</a>
+    </div>
+    <div class="control-popup modal fade" id="contentMapa">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <div id="mapaWrapper" >
+                        <div id="map"></div>        
+                    </div>
+                </div>
+            </div>
         </div>
     </div>    
     <script>
